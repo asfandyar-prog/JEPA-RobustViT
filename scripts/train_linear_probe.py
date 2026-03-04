@@ -30,7 +30,7 @@ batch_size = 32
 learning_rate = 1e-3
 
 
-seed=0
+seed=1
 set_seed(seed)
 
 # Model
