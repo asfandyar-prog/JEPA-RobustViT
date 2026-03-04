@@ -8,6 +8,9 @@ class JEPAClassifier(nn.Module):
         super().__init__()
 
         self.backbone = IJEPABackbone()
+        for param in self.backbone.parameters():
+            param.requires_grad=False
+            
         self.head = nn.Linear(768, num_classes)
 
     def forward(self, x):
