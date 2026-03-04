@@ -22,8 +22,20 @@ learning_rate = 1e-3
 # Model
 model = JEPAClassifier(num_classes=10).to(device)
 
+# --- DEBUG: verify freezing ---
+trainable = [(n, p.shape) for n, p in model.named_parameters() if p.requires_grad]
+frozen = [(n, p.shape) for n, p in model.named_parameters() if not p.requires_grad]
+
+print("Trainable params:")
+for n, s in trainable[:20]:
+    print("  ", n, s)
+print("Total trainable tensors:", len(trainable))
+print("Total frozen tensors:", len(frozen))
+
+# Hard assert: ONLY head should be trainable
+assert all(n.startswith("head.") for n, _ in trainable), "Backbone is NOT frozen!"
 # Only train parameters that require gradients (the head)
-optimizer = torch.optim.Adam(model.head.parameters(), lr=1e-3)
+optimizer = optim.Adam(model.head.parameters(), lr=learning_rate)
 
 criterion = nn.CrossEntropyLoss()
 
