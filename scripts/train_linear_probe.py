@@ -32,7 +32,7 @@ criterion = nn.CrossEntropyLoss()
 
 # Data
 train_loader = get_cifar10_loader(batch_size=batch_size, train=True, limit=5000)
-test_loader = get_cifar10_loader(batch_size=batch_size, train=False, limit=None
+test_loader = get_cifar10_loader(batch_size=batch_size, train=False, limit=None)
 
 
 for epoch in range(num_epochs):
