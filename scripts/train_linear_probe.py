@@ -23,10 +23,7 @@ learning_rate = 1e-3
 model = JEPAClassifier(num_classes=10).to(device)
 
 # Only train parameters that require gradients (the head)
-optimizer = optim.Adam(
-    filter(lambda p: p.requires_grad, model.parameters()),
-    lr=learning_rate
-)
+optimizer = torch.optim.Adam(model.head.parameters(), lr=1e-3)
 
 criterion = nn.CrossEntropyLoss()
 
