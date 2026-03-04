@@ -1,6 +1,6 @@
 # Baseline Experiments
 
-## Experiment 1 — Linear Probe Baseline
+## Linear Probe Baseline
 
 Model: ViT-B (vit_base_patch16_224)  
 Pretraining: ImageNet (supervised)  
@@ -17,9 +17,14 @@ Training setup:
 - Optimizer: Adam
 - Learning rate: 1e-3
 
-Result:
+Results:
 
-Accuracy: **93.35%**
+| Seed | Accuracy |
+|-----|------|
+| 0 | 93.35 |
+| 1 | 93.45 |
+| 2 | 93.51 |
 
-Notes:
-This experiment evaluates representation quality using linear probing with a frozen backbone.
+Final Result:
+
+**93.44 ± 0.07**
