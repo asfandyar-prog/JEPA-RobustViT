@@ -13,11 +13,25 @@ from src.data.cifar_loader import get_cifar10_loader
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+import random
+import numpy as np
+
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+
 # Hyperparameters
 num_epochs = 5
 batch_size = 32
 learning_rate = 1e-3
 
+
+seed=0
+set_seed(seed)
 
 # Model
 model = JEPAClassifier(num_classes=10).to(device)
