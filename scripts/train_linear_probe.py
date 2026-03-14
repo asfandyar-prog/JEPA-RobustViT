@@ -8,7 +8,8 @@ import torch.optim as optim
 from tqdm import tqdm
 
 from src.models.classifier import JEPAClassifier
-from src.data.cifar_loader import get_cifar10_loader
+# from src.data.cifar_loader import get_cifar10_loader
+from src.data.medmnist_loader import get_pathmnist_loader
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -51,13 +52,11 @@ assert all(n.startswith("head.") for n, _ in trainable), "Backbone is NOT frozen
 # Only train parameters that require gradients (the head)
 optimizer = optim.Adam(model.head.parameters(), lr=learning_rate)
 
-criterion = nn.CrossEntropyLoss()
+criterion = torch.nn.CrossEntropyLoss()
 
 # Data
-train_loader = get_cifar10_loader(train=True, limit=5000)
-test_loader = get_cifar10_loader(train=False, limit=None)
-
-
+train_loader = get_pathmnist_loader(batch_size=32, train=True)
+test_loader = get_pathmnist_loader(batch_size=32, train=False)
 for epoch in range(num_epochs):
 
     model.train()

@@ -209,3 +209,6 @@ __marimo__/
 
 # Ignore datasets
 /data/
+.python-version
+pyproject.toml
+uv.lock

@@ -4,7 +4,7 @@ from src.models.ijepa_backbone import IJEPABackbone
 
 
 class JEPAClassifier(nn.Module):
-    def __init__(self, num_classes=10):
+    def __init__(self, num_classes=9):
         super().__init__()
 
         self.backbone = IJEPABackbone()
