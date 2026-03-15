@@ -81,3 +81,7 @@ with torch.no_grad():
 
 accuracy = 100 * correct / total
 print(f"Final Test Accuracy: {accuracy:.2f}%")
+
+# Save the model
+torch.save(model.head.state_dict(), 'best_pathmnist.pth')
+print(f"Model saved to best_pathmnist.pth with accuracy: {accuracy:.2f}%")
