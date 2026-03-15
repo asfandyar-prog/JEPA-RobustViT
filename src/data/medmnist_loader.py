@@ -10,7 +10,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.models.jiepa_backbone import JIEPABackbone
+from src.models.ijepa_backbone import IJEPABackbone
 from src.models.classifier import LinearClassifier
 from src.data.pathmnist_loader import get_pathmnist_loader  # Update import
 
