@@ -28,3 +28,24 @@ Results:
 Final Result:
 
 **93.44 ± 0.07**
+
+
+
+## PathMNIST Baseline (Preliminary)
+
+**Dataset**: PathMNIST (9 tissue types)
+**Image size**: 224 × 224
+**Training setup**:
+- Full training set (~100k images)
+- Epochs: 5  
+- Optimizer: Adam
+- Learning rate: 1e-3
+
+**Result**:
+
+| Seed | Accuracy |
+|------|----------|
+| 2    | 88.73    |
+
+**Current**: 88.73%  
+*Note: Single seed run. More seeds needed for variance estimation.*
