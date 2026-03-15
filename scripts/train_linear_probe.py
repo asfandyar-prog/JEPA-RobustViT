@@ -35,7 +35,7 @@ seed=2
 set_seed(seed)
 
 # Model
-model = JEPAClassifier(num_classes=10).to(device)
+model = JEPAClassifier(num_classes=9).to(device)
 
 # --- DEBUG: verify freezing ---
 trainable = [(n, p.shape) for n, p in model.named_parameters() if p.requires_grad]
