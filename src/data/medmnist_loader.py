@@ -124,7 +124,7 @@ def get_dermamnist_loader(
 def get_bloodmnist_loader(
     batch_size: int = 64,
     split: str = "test",
-    num_workers: int = 2,
+    num_workers: int = 4,
 ) -> DataLoader:
     """
     BloodMNIST: 8-class blood cell type classification.
