@@ -1,190 +1,192 @@
-import argparse
-import numpy as np
+"""
+MedMNIST data loaders for JEPA-RobustViT experiments.
+
+Supported datasets:
+  - PathMNIST   : 9-class colon pathology tissue (source domain)
+  - DermaMNIST  : 7-class skin lesion           (shift target 1)
+  - BloodMNIST  : 8-class blood cell type       (shift target 2)
+  - RetinaMNIST : 5-class retinal fundus grading (shift target 3)
+
+All datasets are resized to 224×224 and normalised with ImageNet statistics
+so they are compatible with ViT-B/16 pretrained on ImageNet.
+"""
+
 import torch
-import torch.nn as nn
-import torch.optim as optim
-from tqdm import tqdm
-from sklearn.metrics import accuracy_score, f1_score
-import sys
-import os
+from torch.utils.data import DataLoader
+import medmnist
+from medmnist import INFO
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.models.ijepa_backbone import IJEPABackbone
-from src.models.classifier import LinearClassifier
-from src.data.pathmnist_loader import get_pathmnist_loader  # Update import
+from src.utils.transforms import get_medical_transforms
 
 
-def train_epoch(model, classifier, loader, criterion, optimizer, device):
-    model.eval()  # Backbone frozen
-    classifier.train()
-    
-    total_loss = 0
-    all_preds = []
-    all_labels = []
-    
-    for images, labels in tqdm(loader, desc="Training"):
-        # PathMNIST returns (images, labels) where labels are [batch_size, 1]
-        images, labels = images.to(device), labels.to(device)
-        labels = labels.squeeze()  # Remove extra dimension: [batch_size, 1] -> [batch_size]
-        
-        optimizer.zero_grad()
-        
-        with torch.no_grad():
-            features = model(images)
-        
-        outputs = classifier(features)
-        loss = criterion(outputs, labels)
-        
-        loss.backward()
-        optimizer.step()
-        
-        total_loss += loss.item()
-        preds = outputs.argmax(dim=1)
-        all_preds.append(preds.cpu())
-        all_labels.append(labels.cpu())
-    
-    all_preds = torch.cat(all_preds).numpy()
-    all_labels = torch.cat(all_labels).numpy()
-    
-    return total_loss / len(loader), all_preds, all_labels
+# ---------------------------------------------------------------------------
+# Internal helper
+# ---------------------------------------------------------------------------
 
+def _build_loader(
+    data_flag: str,
+    split: str,
+    batch_size: int,
+    num_workers: int,
+    train_augment: bool,
+) -> DataLoader:
+    """
+    Generic loader builder for any MedMNIST dataset.
 
-def evaluate(model, classifier, loader, criterion, device):
-    model.eval()
-    classifier.eval()
-    
-    total_loss = 0
-    all_preds = []
-    all_labels = []
-    
-    with torch.no_grad():
-        for images, labels in tqdm(loader, desc="Evaluating"):
-            images, labels = images.to(device), labels.to(device)
-            labels = labels.squeeze()
-            
-            features = model(images)
-            outputs = classifier(features)
-            
-            loss = criterion(outputs, labels)
-            total_loss += loss.item()
-            
-            preds = outputs.argmax(dim=1)
-            all_preds.append(preds.cpu())
-            all_labels.append(labels.cpu())
-    
-    all_preds = torch.cat(all_preds).numpy()
-    all_labels = torch.cat(all_labels).numpy()
-    
-    return total_loss / len(loader), all_preds, all_labels
+    Args:
+        data_flag:     MedMNIST flag string e.g. 'pathmnist'
+        split:         'train', 'val', or 'test'
+        batch_size:    number of samples per batch
+        num_workers:   DataLoader worker processes
+        train_augment: whether to apply training augmentations
 
+    Returns:
+        torch DataLoader
+    """
+    info = INFO[data_flag]
+    DataClass = getattr(medmnist, info["python_class"])
+    transform = get_medical_transforms(train=train_augment)
 
-def compute_metrics(preds, labels):
-    accuracy = accuracy_score(labels, preds)
-    f1_macro = f1_score(labels, preds, average='macro')
-    f1_weighted = f1_score(labels, preds, average='weighted')
-    
-    return {
-        'accuracy': accuracy,
-        'f1_macro': f1_macro,
-        'f1_weighted': f1_weighted
-    }
-
-
-def main(args):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
-    
-    # Load backbone (frozen)
-    backbone = JIEPABackbone(pretrained=True).to(device)
-    backbone.eval()
-    for param in backbone.parameters():
-        param.requires_grad = False
-    
-    # Classifier: PathMNIST has 9 classes
-    classifier = LinearClassifier(
-        input_dim=768,
-        num_classes=9  # PathMNIST classes: 9 tissue types
-    ).to(device)
-    
-    print(f"Trainable params: {sum(p.numel() for p in classifier.parameters())}")
-    
-    # Data loaders
-    train_loader = get_pathmnist_loader(
-        batch_size=args.batch_size,
-        train=True
+    dataset = DataClass(
+        split=split,
+        transform=transform,
+        download=True,
+        as_rgb=True,          # always 3-channel for ViT-B/16
     )
-    
-    val_loader = get_pathmnist_loader(
-        batch_size=args.batch_size,
-        train=False  # PathMNIST uses 'test' as validation split
+
+    loader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=(split == "train"),
+        num_workers=num_workers,
+        pin_memory=True,
+        drop_last=(split == "train"),   # avoids size-1 batches in training
     )
-    
-    # Loss: CrossEntropy for multi-class
-    criterion = nn.CrossEntropyLoss()
-    
-    optimizer = optim.Adam(classifier.parameters(), lr=args.lr)
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
-    
-    best_acc = 0
-    
-    for epoch in range(args.epochs):
-        print(f"\nEpoch {epoch+1}/{args.epochs}")
-        
-        train_loss, train_preds, train_labels = train_epoch(
-            backbone, classifier, train_loader, criterion, optimizer, device
-        )
-        train_metrics = compute_metrics(train_preds, train_labels)
-        
-        val_loss, val_preds, val_labels = evaluate(
-            backbone, classifier, val_loader, criterion, device
-        )
-        val_metrics = compute_metrics(val_preds, val_labels)
-        
-        scheduler.step()
-        
-        print(f"Train Loss: {train_loss:.4f} | Train Acc: {train_metrics['accuracy']:.4f}")
-        print(f"Val Loss: {val_loss:.4f} | Val Acc: {val_metrics['accuracy']:.4f}")
-        print(f"Val F1 (macro): {val_metrics['f1_macro']:.4f}")
-        
-        if val_metrics['accuracy'] > best_acc:
-            best_acc = val_metrics['accuracy']
-            torch.save({
-                'epoch': epoch,
-                'classifier_state_dict': classifier.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'best_acc': best_acc,
-                'val_metrics': val_metrics
-            }, args.save_path)
-            print(f"✓ Saved best model with accuracy: {best_acc:.4f}")
-    
-    print(f"\nBest validation accuracy: {best_acc:.4f}")
-    
-    # Load best model and run final evaluation
-    checkpoint = torch.load(args.save_path)
-    classifier.load_state_dict(checkpoint['classifier_state_dict'])
-    
-    # Optional: Run test evaluation
-    if args.test:
-        test_loader = get_pathmnist_loader(
-            batch_size=args.batch_size,
-            train=False  # Using same as validation for now
-        )
-        test_loss, test_preds, test_labels = evaluate(
-            backbone, classifier, test_loader, criterion, device
-        )
-        test_metrics = compute_metrics(test_preds, test_labels)
-        print(f"\nTest Accuracy: {test_metrics['accuracy']:.4f}")
-        print(f"Test F1 (macro): {test_metrics['f1_macro']:.4f}")
+    return loader
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", type=int, default=32)
-    parser.add_argument("--lr", type=float, default=0.001)
-    parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--save_path", type=str, default="best_pathmnist.pth")
-    parser.add_argument("--test", action="store_true", help="Run test evaluation")
-    args = parser.parse_args()
-    
-    main(args)
+# ---------------------------------------------------------------------------
+# Public API — one function per dataset
+# ---------------------------------------------------------------------------
+
+def get_pathmnist_loader(
+    batch_size: int = 64,
+    split: str = "train",
+    num_workers: int = 2,
+) -> DataLoader:
+    """
+    PathMNIST: 9-class colon pathology tissue classification.
+    ~100k images. This is the SOURCE domain for all domain-shift experiments.
+
+    Args:
+        batch_size:  samples per batch
+        split:       'train', 'val', or 'test'
+        num_workers: DataLoader workers
+
+    Returns:
+        DataLoader
+    """
+    return _build_loader(
+        data_flag="pathmnist",
+        split=split,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        train_augment=(split == "train"),
+    )
+
+
+def get_dermamnist_loader(
+    batch_size: int = 64,
+    split: str = "test",
+    num_workers: int = 2,
+) -> DataLoader:
+    """
+    DermaMNIST: 7-class skin lesion classification.
+    Domain shift target 1 — tissue → skin.
+
+    Args:
+        batch_size:  samples per batch
+        split:       'train', 'val', or 'test'
+        num_workers: DataLoader workers
+
+    Returns:
+        DataLoader
+    """
+    return _build_loader(
+        data_flag="dermamnist",
+        split=split,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        train_augment=(split == "train"),
+    )
+
+
+def get_bloodmnist_loader(
+    batch_size: int = 64,
+    split: str = "test",
+    num_workers: int = 2,
+) -> DataLoader:
+    """
+    BloodMNIST: 8-class blood cell type classification.
+    Domain shift target 2 — tissue → blood cells.
+
+    Args:
+        batch_size:  samples per batch
+        split:       'train', 'val', or 'test'
+        num_workers: DataLoader workers
+
+    Returns:
+        DataLoader
+    """
+    return _build_loader(
+        data_flag="bloodmnist",
+        split=split,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        train_augment=(split == "train"),
+    )
+
+
+def get_retinamnist_loader(
+    batch_size: int = 64,
+    split: str = "test",
+    num_workers: int = 2,
+) -> DataLoader:
+    """
+    RetinaMNIST: 5-class retinal fundus grading.
+    Domain shift target 3 — tissue → retinal fundus.
+
+    Args:
+        batch_size:  samples per batch
+        split:       'train', 'val', or 'test'
+        num_workers: DataLoader workers
+
+    Returns:
+        DataLoader
+    """
+    return _build_loader(
+        data_flag="retinamnist",
+        split=split,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        train_augment=(split == "train"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Dataset metadata — used by training scripts
+# ---------------------------------------------------------------------------
+
+DATASET_NUM_CLASSES = {
+    "pathmnist":  9,
+    "dermamnist": 7,
+    "bloodmnist": 8,
+    "retinamnist": 5,
+}
+
+DATASET_LOADERS = {
+    "pathmnist":  get_pathmnist_loader,
+    "dermamnist": get_dermamnist_loader,
+    "bloodmnist": get_bloodmnist_loader,
+    "retinamnist": get_retinamnist_loader,
+}
