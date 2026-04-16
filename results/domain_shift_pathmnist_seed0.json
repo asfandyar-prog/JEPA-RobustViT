@@ -1,0 +1,30 @@
+{
+  "checkpoint": "/kaggle/working/ckpts/pathmnist_seed0.pth",
+  "source_accuracy": 81.14206128133705,
+  "domains": {
+    "PathMNIST (source)": {
+      "accuracy": 81.14206128133705,
+      "drop": 0.0,
+      "relative": 100.0,
+      "ece": 0.01278406661003828
+    },
+    "DermaMNIST  (shift target 1)": {
+      "accuracy": 5.13715710723192,
+      "drop": 76.00490417410514,
+      "relative": 6.3310655732792975,
+      "ece": 0.8994304537773132
+    },
+    "BloodMNIST  (shift target 2)": {
+      "accuracy": 18.006430868167204,
+      "drop": 63.13563041316985,
+      "relative": 22.19124161233102,
+      "ece": 0.7643674612045288
+    },
+    "RetinaMNIST (shift target 3)": {
+      "accuracy": 10.25,
+      "drop": 70.89206128133705,
+      "relative": 12.632166151733607,
+      "ece": 0.7390066385269165
+    }
+  }
+}

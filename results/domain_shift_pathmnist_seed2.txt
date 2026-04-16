@@ -1,0 +1,8 @@
+Checkpoint: /kaggle/working/ckpts/pathmnist_seed2.pth
+
+Domain                                  Acc    Drop    Rel%     ECE
+------------------------------------------------------------
+PathMNIST (source)                   80.77%  +0.00%  100.0%  0.0175
+DermaMNIST  (shift target 1)          5.44% +75.33%    6.7%  0.8773
+BloodMNIST  (shift target 2)         17.54% +63.23%   21.7%  0.7392
+RetinaMNIST (shift target 3)         10.75% +70.02%   13.3%  0.7382
