@@ -1,164 +1,1008 @@
-# Baseline Results — JEPA-RobustViT
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEPA-RobustViT — Baseline Results</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #6c8fff;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e8e8f0;
+    --text2: #8888a8;
+    --text3: #5555708;
+  }
 
-**Thesis:** Predictive Self-Supervised Vision Transformers under Test-Time Distribution Shifts  
-**Author:** Asfand Yar | University of Debrecen  
-**Supervisors:** Dr. Bogacsovics Gergő (Unideb) · Sergio Correa (BMW)  
-**Last updated:** April 2026
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
----
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
 
-## Experimental Setup
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0d0d1a 0%, #111128 50%, #0a0f1e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
 
-| Parameter | Value |
-|-----------|-------|
-| Backbone | ViT-B/16 (`vit_base_patch16_224`) |
-| Pretraining | ImageNet supervised (timm) |
-| Backbone status | Frozen during all linear probe training |
-| Classifier head | `nn.Linear(768, num_classes)` |
-| Optimizer | Adam, lr=1e-3 |
-| Scheduler | CosineAnnealingLR (T_max=7, η_min=1e-6) |
-| Epochs | 7 |
-| Batch size | 256 |
-| Seeds | 0, 1, 2 |
-| Image size | 224 × 224 |
-| Normalization | ImageNet mean/std |
-| Hardware | NVIDIA Tesla T4 (Kaggle) |
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(108,143,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
----
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; left: 30%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
-## 1. PathMNIST Linear Probe (Source Domain Baseline)
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.9;
+  }
 
-**Dataset:** PathMNIST — 9-class colon pathology tissue classification  
-**Train split:** 89,996 images | **Val split:** 10,004 images | **Test split:** 7,180 images
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
 
-### Per-Seed Results
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
 
-| Seed | Best Val Acc | Test Accuracy | Test ECE |
-|------|-------------|---------------|----------|
-| 0 | 84.66% | 81.14% | 0.0128 |
-| 1 | 84.51% | 80.78% | 0.0110 |
-| 2 | 84.30% | 80.77% | 0.0175 |
+  .hero-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
 
-### Summary
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
 
-| Metric | Mean ± Std |
-|--------|-----------|
-| Test Accuracy | **80.90% ± 0.17%** |
-| Test ECE | **0.0138 ± 0.0033** |
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
 
-### Training Curves (Loss per Epoch)
+  .meta-value {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+  }
 
-| Epoch | Seed 0 Loss | Seed 1 Loss | Seed 2 Loss |
-|-------|------------|------------|------------|
-| 1 | 0.5758 | 0.5944 | 0.5889 |
-| 2 | 0.3946 | 0.3943 | 0.3954 |
-| 3 | 0.3591 | 0.3567 | 0.3566 |
-| 4 | 0.3411 | 0.3398 | 0.3383 |
-| 5 | 0.3283 | 0.3282 | 0.3293 |
-| 6 | 0.3206 | 0.3217 | 0.3213 |
-| 7 | 0.3185 | 0.3203 | 0.3198 |
+  /* Container */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
 
-**Observation:** Loss converges smoothly across all seeds. Minimal variance between seeds confirms stable training.
+  /* Section */
+  .section {
+    margin-top: 48px;
+  }
 
----
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
 
-## 2. Domain Shift Evaluation
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
 
-**Setup:** Model trained on PathMNIST (source) evaluated zero-shot on three target domains.  
-**Purpose:** Quantify the severity of distribution shift as motivation for TTA.
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
 
-### Shift Pair 1: PathMNIST → DermaMNIST
-**Shift type:** Colon tissue → Skin lesion (7 classes)
+  /* Setup grid */
+  .setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
 
-| Seed | Source Acc | Target Acc | Abs Drop | Rel% | Source ECE | Target ECE |
-|------|-----------|-----------|---------|------|-----------|-----------|
-| 0 | 81.14% | 5.14% | -75.99% | 6.3% | 0.0128 | 0.8994 |
-| 1 | 80.78% | 5.34% | -75.44% | 6.6% | 0.0110 | 0.8907 |
-| 2 | 80.77% | 5.44% | -75.33% | 6.7% | 0.0175 | 0.8773 |
-| **Mean** | **80.90%** | **5.31%** | **-75.59%** | **6.6%** | **0.0138** | **0.8891** |
+  .setup-item {
+    background: var(--bg2);
+    padding: 14px 16px;
+  }
 
-### Shift Pair 2: PathMNIST → BloodMNIST
-**Shift type:** Colon tissue → Blood cell type (8 classes)
+  .setup-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
 
-| Seed | Source Acc | Target Acc | Abs Drop | Rel% | Source ECE | Target ECE |
-|------|-----------|-----------|---------|------|-----------|-----------|
-| 0 | 81.14% | 18.01% | -63.14% | 22.2% | 0.0128 | 0.7644 |
-| 1 | 80.78% | 17.80% | -62.98% | 22.0% | 0.0110 | 0.7432 |
-| 2 | 80.77% | 17.54% | -63.23% | 21.7% | 0.0175 | 0.7392 |
-| **Mean** | **80.90%** | **17.78%** | **-63.12%** | **21.9%** | **0.0138** | **0.7489** |
+  .setup-val {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
 
-### Shift Pair 3: PathMNIST → RetinaMNIST
-**Shift type:** Colon tissue → Retinal fundus grading (5 classes)
+  /* Stat cards */
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
 
-| Seed | Source Acc | Target Acc | Abs Drop | Rel% | Source ECE | Target ECE |
-|------|-----------|-----------|---------|------|-----------|-----------|
-| 0 | 81.14% | 10.25% | -70.89% | 12.6% | 0.0128 | 0.7390 |
-| 1 | 80.78% | 10.75% | -70.03% | 13.3% | 0.0110 | 0.7132 |
-| 2 | 80.77% | 10.75% | -70.02% | 13.3% | 0.0175 | 0.7382 |
-| **Mean** | **80.90%** | **10.58%** | **-70.31%** | **13.1%** | **0.0138** | **0.7301** |
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
 
----
+  .stat-card:hover { border-color: var(--accent); }
 
-## 3. Summary Table (Supervised ViT Baseline)
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
 
-| Condition | Accuracy | ECE | Abs Drop | Rel% |
-|-----------|----------|-----|---------|------|
-| PathMNIST (source) | **80.90 ± 0.17%** | 0.0138 | — | 100% |
-| → DermaMNIST | **5.31 ± 0.15%** | 0.8891 | -75.59% | 6.6% |
-| → BloodMNIST | **17.78 ± 0.24%** | 0.7489 | -63.12% | 21.9% |
-| → RetinaMNIST | **10.58 ± 0.29%** | 0.7301 | -70.31% | 13.1% |
+  .stat-card:hover::before { opacity: 1; }
 
----
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
 
-## 4. Key Observations
+  .stat-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+  }
 
-**Catastrophic accuracy degradation under shift.**
-The supervised ViT retains only 6.6% of source performance on DermaMNIST,
-demonstrating that ImageNet-pretrained features fail completely under
-significant domain shift in medical imaging.
+  .stat-value span {
+    font-size: 14px;
+    color: var(--text2);
+    font-weight: 400;
+  }
 
-**ECE collapses under shift.**
-Source ECE of 0.0138 increases to 0.8891 on DermaMNIST — a 64× increase.
-The model becomes severely overconfident in wrong predictions, making
-calibration a critical failure mode alongside accuracy.
+  .stat-sub {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 6px;
+  }
 
-**Shift severity varies by semantic distance.**
-DermaMNIST (skin) represents the largest shift from colon tissue,
-followed by RetinaMNIST (retina) and BloodMNIST (blood cells).
-This ordering provides a natural difficulty axis for evaluating
-robustness methods.
+  .stat-good { color: var(--green) !important; }
+  .stat-warn { color: var(--yellow) !important; }
 
-**Results are highly stable across seeds.**
-Standard deviation of 0.17% on source accuracy and ≤0.29% on all
-target domains confirms reproducibility of findings.
+  /* Table */
+  .table-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
 
----
+  .table-title {
+    padding: 14px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+  }
 
-## 5. Planned Comparisons (To Be Added)
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
 
-The following methods will be evaluated under identical conditions
-and added to this document as experiments complete:
+  th {
+    text-align: left;
+    padding: 10px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+    text-transform: uppercase;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
 
-| Method | Type | Status |
-|--------|------|--------|
-| Supervised ViT (this baseline) | Supervised | ✅ Complete |
-| DINO ViT-B/16 | Self-supervised (contrastive) | ⬜ Planned |
-| MAE ViT-B/16 | Self-supervised (reconstruction) | ⬜ Planned |
-| I-JEPA ViT-B/16 | Self-supervised (predictive) | ⬜ Planned |
-| Supervised ViT + TTA | Supervised + adaptation | ⬜ Planned |
-| DINO + TTA | SSL + adaptation | ⬜ Planned |
-| MAE + TTA | SSL + adaptation | ⬜ Planned |
-| I-JEPA + TTA (proposed) | SSL + adaptation | ⬜ Planned |
+  td {
+    padding: 11px 20px;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
 
----
+  tr:last-child td { border-bottom: none; }
 
-## 6. Checkpoints
+  tr.mean-row td {
+    background: rgba(108,143,255,0.05);
+    font-weight: 500;
+    color: var(--accent);
+    border-top: 1px solid var(--border);
+  }
 
-| Checkpoint | Val Acc | Test Acc | Location |
-|-----------|---------|---------|----------|
-| `pathmnist_seed0.pth` | 84.66% | 81.14% | `checkpoints/` |
-| `pathmnist_seed1.pth` | 84.51% | 80.78% | `checkpoints/` |
-| `pathmnist_seed2.pth` | 84.30% | 80.77% | `checkpoints/` |
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+  }
 
-> Note: Checkpoints are not committed to GitHub due to file size.
-> Store locally and on external storage.
+  .badge-green { background: rgba(52,211,153,0.12); color: var(--green); }
+  .badge-red   { background: rgba(248,113,113,0.12); color: var(--red); }
+  .badge-blue  { background: rgba(108,143,255,0.12); color: var(--accent); }
+  .badge-done  { background: rgba(52,211,153,0.1);  color: var(--green); }
+  .badge-plan  { background: rgba(136,136,168,0.1); color: var(--text2); }
+
+  /* Domain shift cards */
+  .shift-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .shift-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .shift-card:hover { border-color: var(--border); }
+
+  .shift-header {
+    padding: 14px 18px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .shift-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .shift-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 0.08em;
+  }
+
+  .shift-body {
+    padding: 18px;
+  }
+
+  .shift-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .shift-row:last-child { margin-bottom: 0; }
+
+  .shift-metric {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .shift-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* Drop bar */
+  .drop-bar-wrap {
+    margin: 16px 0;
+  }
+
+  .drop-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  .drop-bar-track {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .drop-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--red));
+    transition: width 1s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  /* Observations */
+  .obs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  .obs-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    border-left: 3px solid var(--accent);
+  }
+
+  .obs-card.warn { border-left-color: var(--red); }
+  .obs-card.note { border-left-color: var(--yellow); }
+  .obs-card.good { border-left-color: var(--green); }
+
+  .obs-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .obs-body {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* Training curve */
+  .curve-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .curve-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .curve-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 80px;
+  }
+
+  .curve-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .curve-bar {
+    width: 100%;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent2) 100%);
+    border-radius: 3px 3px 0 0;
+    opacity: 0.7;
+    min-height: 4px;
+    transition: opacity 0.2s;
+  }
+
+  .curve-bar:hover { opacity: 1; }
+
+  .curve-epoch {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text2);
+  }
+
+  /* Comparison planned */
+  .planned-table .badge { font-size: 10px; }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0 0;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+  }
+
+  .footer-left {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .footer-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  /* Tab system */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 10px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+    text-transform: uppercase;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-content { display: none; padding-top: 20px; }
+  .tab-content.active { display: block; }
+
+  .tabbed-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .tabbed-inner { padding: 20px; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 40px 20px; }
+    .container { padding: 0 20px; }
+    .hero-meta { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-label">BSc Thesis · University of Debrecen · 2026</div>
+    <h1>JEPA-RobustViT<br><em>Baseline Experiment Results</em></h1>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <div class="meta-label">Author</div>
+        <div class="meta-value">Asfand Yar</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Supervisor</div>
+        <div class="meta-value">Dr. Bogacsovics Gergő</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">External</div>
+        <div class="meta-value">Sergio Correa · BMW</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Updated</div>
+        <div class="meta-value">April 2026</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Status</div>
+        <div class="meta-value"><span class="badge badge-done">Phase 1 Complete</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Section 1: Setup -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Experimental Setup</span>
+    </div>
+    <div class="setup-grid">
+      <div class="setup-item"><div class="setup-key">Backbone</div><div class="setup-val">ViT-B/16</div></div>
+      <div class="setup-item"><div class="setup-key">Pretraining</div><div class="setup-val">ImageNet (supervised)</div></div>
+      <div class="setup-item"><div class="setup-key">Backbone Status</div><div class="setup-val">Frozen</div></div>
+      <div class="setup-item"><div class="setup-key">Head</div><div class="setup-val">nn.Linear(768, C)</div></div>
+      <div class="setup-item"><div class="setup-key">Optimizer</div><div class="setup-val">Adam, lr=1e-3</div></div>
+      <div class="setup-item"><div class="setup-key">Scheduler</div><div class="setup-val">CosineAnnealingLR</div></div>
+      <div class="setup-item"><div class="setup-key">Epochs</div><div class="setup-val">7</div></div>
+      <div class="setup-item"><div class="setup-key">Batch Size</div><div class="setup-val">256</div></div>
+      <div class="setup-item"><div class="setup-key">Seeds</div><div class="setup-val">0, 1, 2</div></div>
+      <div class="setup-item"><div class="setup-key">Image Size</div><div class="setup-val">224 × 224</div></div>
+      <div class="setup-item"><div class="setup-key">Normalization</div><div class="setup-val">ImageNet μ/σ</div></div>
+      <div class="setup-item"><div class="setup-key">Hardware</div><div class="setup-val">NVIDIA Tesla T4</div></div>
+    </div>
+  </div>
+
+  <!-- Section 2: Linear Probe -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">PathMNIST Linear Probe — Source Domain</span>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-label">Mean Test Accuracy</div>
+        <div class="stat-value stat-good">80.90<span>%</span></div>
+        <div class="stat-sub">± 0.17% across 3 seeds</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Mean Test ECE</div>
+        <div class="stat-value stat-good">0.0138</div>
+        <div class="stat-sub">Well calibrated on source</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Val Accuracy</div>
+        <div class="stat-value">84.66<span>%</span></div>
+        <div class="stat-sub">Seed 0, epoch 7</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Trainable Params</div>
+        <div class="stat-value">6,921</div>
+        <div class="stat-sub">Head only — 768×9 + bias</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-title">Per-Seed Results</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Seed</th>
+            <th>Best Val Acc</th>
+            <th>Test Accuracy</th>
+            <th>Test ECE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0</td>
+            <td>84.66%</td>
+            <td><span class="badge badge-blue">81.14%</span></td>
+            <td>0.0128</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>84.51%</td>
+            <td><span class="badge badge-blue">80.78%</span></td>
+            <td>0.0110</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>84.30%</td>
+            <td><span class="badge badge-blue">80.77%</span></td>
+            <td>0.0175</td>
+          </tr>
+          <tr class="mean-row">
+            <td>Mean ± Std</td>
+            <td>84.49 ± 0.15%</td>
+            <td>80.90 ± 0.17%</td>
+            <td>0.0138 ± 0.0033</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="curve-wrap">
+      <div class="curve-title">Training Loss Convergence (Seed 0)</div>
+      <div class="curve-chart" id="lossChart"></div>
+    </div>
+  </div>
+
+  <!-- Section 3: Domain Shift -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Domain Shift Evaluation</span>
+    </div>
+
+    <div class="shift-grid">
+
+      <div class="shift-card">
+        <div class="shift-header">
+          <div>
+            <div class="shift-name">PathMNIST → DermaMNIST</div>
+            <div class="shift-type">Colon tissue → Skin lesion · 7 classes</div>
+          </div>
+          <span class="badge badge-red">Severe</span>
+        </div>
+        <div class="shift-body">
+          <div class="drop-bar-wrap">
+            <div class="drop-bar-label">
+              <span>Source: 80.90%</span>
+              <span>Target: 5.31%</span>
+            </div>
+            <div class="drop-bar-track">
+              <div class="drop-bar-fill" style="width:93.4%"></div>
+            </div>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Accuracy</span>
+            <span class="shift-val" style="color:var(--red)">5.31 ± 0.15%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Absolute Drop</span>
+            <span class="shift-val" style="color:var(--red)">−75.59%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Relative Retained</span>
+            <span class="shift-val" style="color:var(--red)">6.6%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">ECE (source → target)</span>
+            <span class="shift-val">0.0138 → 0.8891</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shift-card">
+        <div class="shift-header">
+          <div>
+            <div class="shift-name">PathMNIST → BloodMNIST</div>
+            <div class="shift-type">Colon tissue → Blood cell · 8 classes</div>
+          </div>
+          <span class="badge badge-red">Severe</span>
+        </div>
+        <div class="shift-body">
+          <div class="drop-bar-wrap">
+            <div class="drop-bar-label">
+              <span>Source: 80.90%</span>
+              <span>Target: 17.78%</span>
+            </div>
+            <div class="drop-bar-track">
+              <div class="drop-bar-fill" style="width:78%"></div>
+            </div>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Accuracy</span>
+            <span class="shift-val" style="color:var(--red)">17.78 ± 0.24%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Absolute Drop</span>
+            <span class="shift-val" style="color:var(--red)">−63.12%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Relative Retained</span>
+            <span class="shift-val" style="color:var(--yellow)">21.9%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">ECE (source → target)</span>
+            <span class="shift-val">0.0138 → 0.7489</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shift-card">
+        <div class="shift-header">
+          <div>
+            <div class="shift-name">PathMNIST → RetinaMNIST</div>
+            <div class="shift-type">Colon tissue → Retinal fundus · 5 classes</div>
+          </div>
+          <span class="badge badge-red">Severe</span>
+        </div>
+        <div class="shift-body">
+          <div class="drop-bar-wrap">
+            <div class="drop-bar-label">
+              <span>Source: 80.90%</span>
+              <span>Target: 10.58%</span>
+            </div>
+            <div class="drop-bar-track">
+              <div class="drop-bar-fill" style="width:86.9%"></div>
+            </div>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Accuracy</span>
+            <span class="shift-val" style="color:var(--red)">10.58 ± 0.29%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Absolute Drop</span>
+            <span class="shift-val" style="color:var(--red)">−70.31%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">Relative Retained</span>
+            <span class="shift-val" style="color:var(--red)">13.1%</span>
+          </div>
+          <div class="shift-row">
+            <span class="shift-metric">ECE (source → target)</span>
+            <span class="shift-val">0.0138 → 0.7301</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Summary table -->
+    <div class="table-wrap">
+      <div class="table-title">Summary — Supervised ViT Baseline (Mean across 3 seeds)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Condition</th>
+            <th>Accuracy</th>
+            <th>ECE</th>
+            <th>Abs Drop</th>
+            <th>Retained</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PathMNIST (source)</td>
+            <td><span class="badge badge-green">80.90 ± 0.17%</span></td>
+            <td>0.0138</td>
+            <td>—</td>
+            <td>100%</td>
+          </tr>
+          <tr>
+            <td>→ DermaMNIST</td>
+            <td><span class="badge badge-red">5.31 ± 0.15%</span></td>
+            <td>0.8891</td>
+            <td>−75.59%</td>
+            <td>6.6%</td>
+          </tr>
+          <tr>
+            <td>→ BloodMNIST</td>
+            <td><span class="badge badge-red">17.78 ± 0.24%</span></td>
+            <td>0.7489</td>
+            <td>−63.12%</td>
+            <td>21.9%</td>
+          </tr>
+          <tr>
+            <td>→ RetinaMNIST</td>
+            <td><span class="badge badge-red">10.58 ± 0.29%</span></td>
+            <td>0.7301</td>
+            <td>−70.31%</td>
+            <td>13.1%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 4: Observations -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Key Observations</span>
+    </div>
+    <div class="obs-grid">
+      <div class="obs-card warn">
+        <div class="obs-title">Catastrophic Accuracy Degradation</div>
+        <div class="obs-body">The supervised ViT retains only 6.6% of source performance on DermaMNIST. ImageNet-pretrained features fail completely under significant medical domain shift.</div>
+      </div>
+      <div class="obs-card warn">
+        <div class="obs-title">ECE Collapses Under Shift</div>
+        <div class="obs-body">Source ECE of 0.0138 increases to 0.8891 on DermaMNIST — a 64× increase. The model becomes severely overconfident in wrong predictions.</div>
+      </div>
+      <div class="obs-card note">
+        <div class="obs-title">Shift Severity Varies by Distance</div>
+        <div class="obs-body">DermaMNIST shows the largest shift, followed by RetinaMNIST and BloodMNIST. This provides a natural difficulty axis for evaluating robustness methods.</div>
+      </div>
+      <div class="obs-card good">
+        <div class="obs-title">Stable Across Seeds</div>
+        <div class="obs-body">Std of 0.17% on source accuracy and ≤0.29% on all targets confirms highly reproducible results. 3-seed protocol is sufficient.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Planned -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Planned Comparisons</span>
+    </div>
+    <div class="table-wrap planned-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Type</th>
+            <th>Source</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Supervised ViT-B/16</td>
+            <td>Supervised pretraining</td>
+            <td>ImageNet labels</td>
+            <td><span class="badge badge-done">✓ Complete</span></td>
+          </tr>
+          <tr>
+            <td>DINO ViT-B/16</td>
+            <td>Self-supervised (contrastive)</td>
+            <td>Official weights</td>
+            <td><span class="badge badge-plan">⬜ Planned</span></td>
+          </tr>
+          <tr>
+            <td>MAE ViT-B/16</td>
+            <td>Self-supervised (reconstruction)</td>
+            <td>Official weights</td>
+            <td><span class="badge badge-plan">⬜ Planned</span></td>
+          </tr>
+          <tr>
+            <td>I-JEPA ViT-B/16</td>
+            <td>Self-supervised (predictive)</td>
+            <td>Custom pretrained</td>
+            <td><span class="badge badge-plan">⬜ Planned</span></td>
+          </tr>
+          <tr>
+            <td>Supervised ViT + TTA</td>
+            <td>Supervised + adaptation</td>
+            <td>Entropy minimization</td>
+            <td><span class="badge badge-plan">⬜ Planned</span></td>
+          </tr>
+          <tr>
+            <td>DINO + TTA</td>
+            <td>SSL + adaptation</td>
+            <td>Entropy minimization</td>
+            <td><span class="badge badge-plan">⬜ Planned</span></td>
+          </tr>
+          <tr>
+            <td>MAE + TTA</td>
+            <td>SSL + adaptation</td>
+            <td>Entropy minimization</td>
+            <td><span class="badge badge-plan">⬜ Planned</span></td>
+          </tr>
+          <tr>
+            <td><strong>I-JEPA + TTA (proposed)</strong></td>
+            <td><strong>SSL + adaptation</strong></td>
+            <td><strong>Entropy minimization</strong></td>
+            <td><span class="badge badge-plan">⬜ Planned</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-left">JEPA-RobustViT · University of Debrecen · BSc Thesis 2026</div>
+    <div class="footer-right">github.com/asfandyar-prog/JEPA-RobustViT</div>
+  </div>
+
+</div>
+
+<script>
+  // Render loss curve
+  const losses = [0.5758, 0.3946, 0.3591, 0.3411, 0.3283, 0.3206, 0.3185];
+  const chart = document.getElementById('lossChart');
+  const maxLoss = Math.max(...losses);
+  const minLoss = Math.min(...losses);
+
+  losses.forEach((loss, i) => {
+    const col = document.createElement('div');
+    col.className = 'curve-col';
+    const heightPct = ((loss - minLoss) / (maxLoss - minLoss)) * 70 + 10;
+    col.innerHTML = `
+      <div class="curve-bar" style="height:${heightPct}%" title="Epoch ${i+1}: ${loss.toFixed(4)}"></div>
+      <div class="curve-epoch">E${i+1}</div>
+    `;
+    chart.appendChild(col);
+  });
+
+  // Animate drop bars on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.drop-bar-fill').forEach(bar => {
+          const w = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => { bar.style.width = w; }, 100);
+        });
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.shift-card').forEach(c => observer.observe(c));
+</script>
+</body>
+</html>
