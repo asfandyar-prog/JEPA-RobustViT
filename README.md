@@ -1,280 +1,196 @@
 <div align="center">
 
-<h1>🦾 JEPA-RobustViT</h1>
+<h1>JEPA-RobustViT</h1>
 
-<p><em>Predictive Self-Supervised Vision Transformers under Test-Time Distribution Shifts</em></p>
+<p><em>Predictive Self-Supervised Vision Transformers under Test-Time Distribution Shifts with Lightweight Test-Time Adaptation</em></p>
+
 <p><strong>BSc Computer Science Thesis &nbsp;·&nbsp; Asfand Yar &nbsp;·&nbsp; University of Debrecen &nbsp;·&nbsp; 2026</strong></p>
 
-<!-- Badges Row 1 -->
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
-[![timm](https://img.shields.io/badge/timm-ViT%20Backbone-7C3AED?style=for-the-badge)](https://github.com/huggingface/pytorch-image-models)
+[![timm](https://img.shields.io/badge/timm-ViT--B/16-7C3AED?style=for-the-badge)](https://github.com/huggingface/pytorch-image-models)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active%20Research-10b981?style=for-the-badge)](https://github.com/asfandyar-prog/JEPA-RobustViT)
 
-<!-- Badges Row 2 -->
-[![Thesis](https://img.shields.io/badge/BSc%20Thesis-Debrecen%202026-f97316?style=for-the-badge&logo=academia&logoColor=white)](https://github.com/asfandyar-prog/JEPA-RobustViT)
-[![Status](https://img.shields.io/badge/Status-Active%20Research-10b981?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/asfandyar-prog/JEPA-RobustViT)
-[![Author](https://img.shields.io/badge/Author-Asfand%20Yar-6366f1?style=for-the-badge&logo=github&logoColor=white)](https://github.com/asfandyar-prog)
+**[Live Results Dashboard](https://asfandyar-prog.github.io/JEPA-RobustViT/)**
 
 </div>
 
 ---
 
-## 🔍 What is JEPA-RobustViT?
+## What is JEPA-RobustViT?
 
-**JEPA-RobustViT** is a research framework combining *predictive self-supervised learning* — inspired by Yann LeCun's Joint-Embedding Predictive Architecture (I-JEPA) — with **test-time adaptation (TTA)** to produce Vision Transformers that stay robust under real-world distribution shifts.
+**JEPA-RobustViT** is a research framework that combines *predictive self-supervised pretraining* with *lightweight test-time adaptation* to produce Vision Transformers that remain robust under real-world distribution shifts.
 
-Standard supervised ViTs degrade significantly on corrupted inputs. This work investigates whether learning to **predict representations in embedding space** (not pixels) produces features inherently resistant to noise, blur, weather, and domain change — and whether TTA can close the remaining gap at inference time, without any labels.
+The core insight: a ViT pretrained to **predict abstract representations** of masked image regions (rather than reconstructing pixels) learns deeper semantic features that transfer better across domains. When combined with entropy-based test-time adaptation — compatible with LayerNorm, requiring zero labels — the resulting model adapts automatically to unseen distributions at inference time.
 
-> *"A model that can predict its own latent future is a model that understands its world."*
+**Real-world motivation:** A medical AI trained on tissue pathology images degrades catastrophically when deployed on skin lesion or retinal fundus data. Our supervised ViT baseline retains only **6.6% of source accuracy** on DermaMNIST under zero-shot transfer, with ECE rising from 0.014 to 0.889. This is the problem we solve.
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture
 
-```mermaid
-flowchart TD
-    IMG["🖼️  Input Image\n224 × 224 × 3"]
+The full pipeline has four stages:
 
-    subgraph EMBED["① Patch Embedding"]
-        direction LR
-        P1["P₁"] --- P2["P₂"] --- P3["P₃"] --- P4["P₄"] --- P5["P₅"] --- P6["P₆"]
-        CLS["[CLS]"]
-    end
+**① Backbone (ViT-B/16)** — A Vision Transformer that splits a 224×224 image into 196 patches of 16×16 pixels. Each patch is projected to a 768-dimensional embedding. A learnable CLS token aggregates global context across all patches through 12 layers of multi-head self-attention. The CLS token output is the image representation.
 
-    subgraph BLOCK["② Transformer Encoder Block  ×L"]
-        direction TB
+**② I-JEPA Pretraining** — The backbone is pretrained using a Joint-Embedding Predictive Architecture. A context encoder processes visible patches; a target encoder (updated via exponential moving average, no backprop) processes the full image. A lightweight predictor is trained to predict target encoder representations of masked regions from context encoder outputs using L2 loss in representation space — never at the pixel level.
 
-        LN1["📐 Layer Norm 1\nx̂ = (x−μ)/σ · γ + β"]
+**③ Linear Probe** — The pretrained backbone is frozen. A single linear layer `nn.Linear(768, num_classes)` is trained on top. This isolates the quality of learned representations from the classifier capacity.
 
-        subgraph MHSA["Multi-Head Self-Attention  (h = 6 heads)"]
-            direction LR
-            Q["Q\nW_Q · x"] 
-            K["K\nW_K · x"] 
-            V["V\nW_V · x"]
-            SDPA["Scaled Dot-Product\nsoftmax(QKᵀ/√d_k)·V"]
-            CONCAT["Concat heads\n→ W_O"]
-            Q --> SDPA
-            K --> SDPA
-            V --> SDPA
-            SDPA --> CONCAT
-        end
+**④ Test-Time Adaptation** — At inference, entropy of predictions is minimized by updating only the LayerNorm scale (γ) and shift (β) parameters. No labels required. Compatible with ViT architecture. Runs on a single forward pass.
 
-        ADD1(("⊕\nAdd"))
-        LN2["📐 Layer Norm 2\nx̂ = (x−μ)/σ · γ + β"]
-
-        subgraph FFN["Feed-Forward Network"]
-            direction LR
-            L1["Linear₁\nd → 4d"] --> GELU["GELU\nσ(x)·x"] --> L2["Linear₂\n4d → d"]
-        end
-
-        ADD2(("⊕\nAdd"))
-
-        LN1 --> MHSA
-        MHSA --> ADD1
-        ADD1 --> LN2
-        LN2 --> FFN
-        FFN --> ADD2
-    end
-
-    subgraph JEPA["③ JEPA Predictor"]
-        direction TB
-        CTX["Context Encoder\nvisible patches"]
-        PRED["Predictor\nf(z_context)"]
-        LOSS["L = ‖ẑ − z_target‖²\npredict in embedding space"]
-        CTX --> PRED --> LOSS
-    end
-
-    subgraph TTA["④ Test-Time Adaptation"]
-        direction TB
-        ENT["Entropy Min.\nH(p) → min"]
-        BN["BatchNorm\nμ, σ update"]
-        AUG["Aug. Consistency\nno labels required"]
-    end
-
-    CLS --> EMBED
-    EMBED --> BLOCK
-    IMG --> EMBED
-
-    BLOCK --> JEPA
-    BLOCK --> TTA
-
-    CLS2["🎯 Linear Classifier\nW ∈ ℝ^{d×C} · softmax\nRobust Prediction ✓"]
-
-    JEPA --> CLS2
-    TTA --> CLS2
-
-    style IMG fill:#1e293b,stroke:#64748b,color:#e2e8f0
-    style EMBED fill:#0f172a,stroke:#3b82f6,color:#93c5fd
-    style BLOCK fill:#0f0a2a,stroke:#7c3aed,color:#c4b5fd
-    style MHSA fill:#1e1b4b,stroke:#6366f1,color:#a5b4fc
-    style FFN fill:#064e3b,stroke:#10b981,color:#6ee7b7
-    style LN1 fill:#2e1065,stroke:#7c3aed,color:#c4b5fd
-    style LN2 fill:#2e1065,stroke:#7c3aed,color:#c4b5fd
-    style ADD1 fill:#083344,stroke:#06b6d4,color:#06b6d4
-    style ADD2 fill:#1e0a40,stroke:#a855f7,color:#a855f7
-    style Q fill:#1e3a8a,stroke:#3b82f6,color:#93c5fd
-    style K fill:#14532d,stroke:#10b981,color:#6ee7b7
-    style V fill:#7f1d1d,stroke:#ef4444,color:#fca5a5
-    style SDPA fill:#1e1b4b,stroke:#818cf8,color:#a5b4fc
-    style CONCAT fill:#312e81,stroke:#6366f1,color:#a5b4fc
-    style L1 fill:#064e3b,stroke:#059669,color:#a7f3d0
-    style GELU fill:#065f46,stroke:#34d399,color:#6ee7b7
-    style L2 fill:#064e3b,stroke:#059669,color:#a7f3d0
-    style JEPA fill:#022c22,stroke:#059669,color:#34d399
-    style CTX fill:#053d2a,stroke:#10b981,color:#6ee7b7
-    style PRED fill:#064e3b,stroke:#34d399,color:#a7f3d0
-    style LOSS fill:#065f46,stroke:#6ee7b7,color:#d1fae5
-    style TTA fill:#1a0803,stroke:#ea580c,color:#fb923c
-    style ENT fill:#3b1108,stroke:#f97316,color:#fdba74
-    style BN fill:#3b1108,stroke:#ea580c,color:#fdba74
-    style AUG fill:#3b1108,stroke:#c2410c,color:#fdba74
-    style CLS2 fill:#1e0a40,stroke:#6366f1,color:#a5b4fc
+```
+Input Image (224×224)
+        │
+        ▼
+┌─────────────────────┐
+│   Patch Embedding   │  196 patches × 768-dim + CLS token
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────┐
+│  ViT-B/16 Encoder   │  12 × [LayerNorm → MHSA → LayerNorm → FFN]
+│  (Frozen after SSL) │  Output: CLS token ∈ ℝ^768
+└─────────────────────┘
+        │
+   ┌────┴────┐
+   │         │
+   ▼         ▼
+┌──────┐  ┌──────────────┐
+│Linear│  │ TTA Module   │
+│Probe │  │ Entropy min. │
+│head  │  │ on LN params │
+└──────┘  └──────────────┘
 ```
 
 ---
 
-## 📊 Research Contributions
+## Results
 
-| # | Contribution | Status |
-|---|---|---|
-| 🔵 | **ViT Baseline** — timm ViT-S/16, pretrained on ImageNet-1K | ✅ Complete |
-| 🟣 | **JEPA Predictive Head** — context→target embedding prediction, masked patch strategy | ✅ Complete |
-| 🟢 | **TTA: Entropy Minimization** — minimizes prediction entropy at test time | ✅ Complete |
-| 🟢 | **TTA: BatchNorm Adaptation** — adapts running statistics to test distribution | ✅ Complete |
-| 🟠 | **ImageNet-C Evaluation** — 15 corruption types × 5 severity levels | 🔄 In Progress |
-| 🟠 | **ImageNet-R Evaluation** — rendition/style domain shift benchmark | 🔄 In Progress |
-| ⚪ | **Medical Domain Transfer** — ChestX-ray14, DermaMNIST loaders | 🔄 In Progress |
+> Full results with visualizations: **[Live Dashboard](https://asfandyar-prog.github.io/JEPA-RobustViT/)**
+
+### Supervised ViT Baseline (Phase 1 — Complete)
+
+| Condition | Accuracy | ECE | Retained |
+|-----------|----------|-----|---------|
+| PathMNIST (source) | **80.90 ± 0.17%** | 0.0138 | 100% |
+| → DermaMNIST | 5.31 ± 0.15% | 0.8891 | 6.6% |
+| → BloodMNIST | 17.78 ± 0.24% | 0.7489 | 21.9% |
+| → RetinaMNIST | 10.58 ± 0.29% | 0.7301 | 13.1% |
+
+### Full Comparison Table (In Progress)
+
+| Method | PathMNIST | →Derma | →Blood | →Retina |
+|--------|-----------|--------|--------|---------|
+| Supervised ViT | 80.90% | 5.31% | 17.78% | 10.58% |
+| DINO ViT-B/16 | — | — | — | — |
+| MAE ViT-B/16 | — | — | — | — |
+| I-JEPA (ours) | — | — | — | — |
+| Supervised + TTA | — | — | — | — |
+| DINO + TTA | — | — | — | — |
+| MAE + TTA | — | — | — | — |
+| **I-JEPA + TTA (proposed)** | — | — | — | — |
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 JEPA-RobustViT/
-│
-├── 📂 src/
-│   ├── backbone.py          # ViT encoder (timm wrapper)
-│   ├── predictor.py         # JEPA predictive head
-│   ├── classifier.py        # Linear probe classifier
-│   └── tta.py               # Test-time adaptation modules
-│
-├── 📂 scripts/
-│   ├── train_backbone.py    # Backbone pretraining
-│   ├── train_jepa.py        # JEPA objective training
-│   ├── test_backbone.py     # Evaluation pipeline
-│   └── eval_robustness.py   # ImageNet-C/R benchmarks
-│
-├── 📂 results/
-│   └── baselines.md         # Tracked experiment results
-│
-├── main.py                  # Entry point
-├── pyproject.toml           # Project configuration
-└── requirements.txt         # Dependencies
+├── src/
+│   ├── models/
+│   │   ├── ijepa_backbone.py     # ViT-B/16 feature extractor (timm)
+│   │   ├── classifier.py         # Frozen backbone + linear head
+│   │   ├── jepa_predictor.py     # JEPA predictor head (planned)
+│   │   └── tta.py                # Entropy-based TTA (planned)
+│   ├── data/
+│   │   ├── medmnist_loader.py    # PathMNIST, DermaMNIST, BloodMNIST, RetinaMNIST
+│   │   └── cifar_loader.py       # CIFAR-10 loader
+│   └── utils/
+│       ├── metrics.py            # Accuracy, ECE, AverageMeter
+│       └── transforms.py        # Standardised preprocessing
+├── scripts/
+│   ├── train_linear_probe.py     # Baseline training (multi-seed, argparse)
+│   ├── eval_domain_shift.py      # Domain shift evaluation
+│   ├── eval_baselines.py         # DINO/MAE comparison (planned)
+│   └── train_jepa.py             # I-JEPA pretraining (planned)
+├── results/
+│   ├── baselines.md              # Experiment results (markdown)
+│   ├── baselines.html            # Interactive results dashboard
+│   └── *.json / *.txt            # Raw result files
+├── notebooks/
+│   └── kaggle_train.ipynb        # Kaggle training notebook
+├── docs/
+│   └── index.html                # GitHub Pages dashboard
+├── requirements.txt
+└── pyproject.toml
 ```
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
-**Clone & install:**
 ```bash
 git clone https://github.com/asfandyar-prog/JEPA-RobustViT.git
 cd JEPA-RobustViT
 pip install -r requirements.txt
 ```
 
-**Or with `uv` (recommended):**
+**Train linear probe (3 seeds):**
 ```bash
-uv sync
+python scripts/train_linear_probe.py --dataset pathmnist --seed 0 --epochs 7
+python scripts/train_linear_probe.py --dataset pathmnist --seed 1 --epochs 7
+python scripts/train_linear_probe.py --dataset pathmnist --seed 2 --epochs 7
 ```
 
-**Run baseline evaluation:**
+**Evaluate domain shift:**
 ```bash
-python scripts/test_backbone.py --model vit_small_patch16_224 --dataset cifar10
-```
-
-**Train with JEPA objective:**
-```bash
-python main.py --mode jepa --backbone vit_small_patch16_224 --epochs 100
-```
-
-**Run TTA robustness evaluation:**
-```bash
-python scripts/eval_robustness.py --tta entropy --dataset imagenet-c --severity 3
+python scripts/eval_domain_shift.py --checkpoint checkpoints/pathmnist_seed0.pth
 ```
 
 ---
 
-## 🧠 Key Design Decisions
+## Key Design Decisions
 
-### Why JEPA over MAE?
-Masked Autoencoders reconstruct pixels — a task requiring high-frequency detail but not semantic understanding. JEPA predicts **representations**, forcing the model to reason at the level of meaning. This is hypothesized to yield features more invariant to low-level corruptions like noise and blur.
+**Why I-JEPA over MAE?**
+MAE reconstructs pixels — forcing the model to learn high-frequency texture details irrelevant to semantic understanding. I-JEPA predicts representations in embedding space, learning what things *are* rather than what they look like at pixel level. This produces more transferable features under domain shift.
 
-### Why Test-Time Adaptation?
-Even robust pretraining cannot anticipate all deployment-time distribution shifts. TTA adapts normalization statistics and reduces prediction entropy on the specific test batch — with **no labels required**.
+**Why not TENT for TTA?**
+TENT adapts BatchNorm statistics at test time. Vision Transformers use LayerNorm, not BatchNorm. Our entropy minimization approach directly optimizes the LayerNorm affine parameters (γ, β), making it natively compatible with ViT architectures.
 
-### Why ViT?
-Transformers lack the inductive biases (translation equivariance, locality) of CNNs. This makes them both more sensitive to distribution shift *and* a cleaner testbed for studying what self-supervised objectives contribute to robustness independently of architecture priors.
-
----
-
-## 📈 Results (Preliminary)
-
-> Full benchmark table in [`results/baselines.md`](results/baselines.md)
-
-| Model | ImageNet-1K (clean) | ImageNet-C (mCE ↓) | Notes |
-|---|---|---|---|
-| ViT-S/16 Supervised | ~79.8% | ~55.4 | Baseline |
-| ViT-S/16 + MAE | ~83.1% | ~49.2 | Pixel reconstruction |
-| **ViT-S/16 + JEPA** *(ours)* | 🔄 WIP | 🔄 WIP | Embedding prediction |
-| **+ TTA Entropy Min** *(ours)* | 🔄 WIP | 🔄 WIP | Inference-time adapt |
+**Why freeze the backbone during linear probe?**
+A linear probe measures representation quality directly. If the backbone is fine-tuned, improved accuracy could come from adaptation rather than from better pretraining. Freezing isolates the SSL method's contribution.
 
 ---
 
-## 📚 Theoretical Background
+## Theoretical Background
 
-This work sits at the intersection of three active research threads:
+This work sits at the intersection of three research threads:
 
-**1. Joint-Embedding Predictive Architectures (LeCun, 2022)**
-Predict abstract representations of masked/future inputs rather than raw pixels — learning rich semantic features without pixel-level reconstruction.
+**Joint-Embedding Predictive Architectures** (Assran et al., CVPR 2023) — predict abstract representations of masked regions rather than raw pixels. The target encoder is updated via exponential moving average, avoiding representation collapse without contrastive pairs.
 
-**2. Vision Transformers under Distribution Shift**
-ViTs exhibit different robustness profiles than CNNs ([Bhojanapalli et al., 2021](https://arxiv.org/abs/2104.02821); [Paul & Chen, 2022](https://arxiv.org/abs/2105.07581)) — understanding *why* is a core question this thesis addresses.
+**Vision Transformers under Distribution Shift** — ViTs exhibit different robustness profiles than CNNs. Their lack of CNN inductive biases (locality, translation equivariance) makes them both more sensitive to shift and a cleaner testbed for studying self-supervised objectives independently of architecture priors.
 
-**3. Test-Time Adaptation**
-TENT ([Wang et al., 2021](https://arxiv.org/abs/2006.10726)) and subsequent TTA methods demonstrate that adapting normalization layers at inference significantly closes the clean→corrupted accuracy gap without labeled test data.
+**Test-Time Adaptation** — TENT (Wang et al., ICLR 2021) demonstrated that adapting normalization layers at inference significantly closes the clean→corrupted accuracy gap without labeled test data. Our work extends this to LayerNorm-based architectures.
 
 ---
 
-## ⚙️ Dependencies
+## Supervisors
 
-```toml
-[dependencies]
-torch       = ">=2.0"
-torchvision = ">=0.15"
-timm        = ">=0.9"
-einops      = ">=0.7"
-numpy       = ">=1.24"
-tqdm        = ">=4.65"
-```
+| Role | Name | Institution |
+|------|------|-------------|
+| Primary supervisor | Dr. Bogacsovics Gergő | University of Debrecen |
+| External supervisor | Sergio Correa | BMW Group |
 
 ---
-
-## 👤 About
 
 <div align="center">
 
 **Asfand Yar** · BSc Computer Science · University of Debrecen, Hungary
 
-*Thesis project 2025–2026 · Specialization: Generative & Agentic AI Systems*
-
 [![GitHub](https://img.shields.io/badge/GitHub-asfandyar--prog-181717?style=flat-square&logo=github)](https://github.com/asfandyar-prog)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Asfand%20Yar-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/asfand-yar-3966b8291)
 [![Email](https://img.shields.io/badge/Email-yarasfand886%40gmail.com-EA4335?style=flat-square&logo=gmail)](mailto:yarasfand886@gmail.com)
-
-<br/>
-
-*If this work is useful to your research, a ⭐ helps the project grow.*
 
 </div>
