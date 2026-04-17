@@ -212,3 +212,6 @@ __marimo__/
 .python-version
 pyproject.toml
 uv.lock
+
+logs/*.out
+logs/*.err
