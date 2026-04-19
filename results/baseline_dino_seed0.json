@@ -1,0 +1,36 @@
+{
+  "method": "dino",
+  "seed": 0,
+  "epochs": 10,
+  "lr": 0.001,
+  "batch_size": 256,
+  "best_val_acc": 95.08,
+  "test_accuracy": 91.31,
+  "test_ece": 0.0151,
+  "domain_shift": {
+    "pathmnist_source": {
+      "accuracy": 91.31,
+      "ece": 0.0151,
+      "drop": 0.0,
+      "retained_pct": 100.0
+    },
+    "dermamnist_shift1": {
+      "accuracy": 6.33,
+      "ece": 0.8558,
+      "drop": 84.98,
+      "retained_pct": 6.9
+    },
+    "bloodmnist_shift2": {
+      "accuracy": 18.62,
+      "ece": 0.7098,
+      "drop": 72.69,
+      "retained_pct": 20.4
+    },
+    "retinamnist_shift3": {
+      "accuracy": 11.50,
+      "ece": 0.8788,
+      "drop": 79.81,
+      "retained_pct": 12.6
+    }
+  }
+}
