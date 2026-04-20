@@ -21,7 +21,6 @@
             --yellow: #fbbf24;
             --text: #e8e8f0;
             --text2: #8888a8;
-            --text3: #5555708;
         }
 
         * {
@@ -38,7 +37,6 @@
             padding: 0 0 80px;
         }
 
-        /* Hero */
         .hero {
             background: linear-gradient(135deg, #0d0d1a 0%, #111128 50%, #0a0f1e 100%);
             border-bottom: 1px solid var(--border);
@@ -58,17 +56,6 @@
             pointer-events: none;
         }
 
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -50px;
-            left: 30%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
         .hero-label {
             font-family: 'DM Mono', monospace;
             font-size: 11px;
@@ -76,7 +63,6 @@
             color: var(--accent);
             text-transform: uppercase;
             margin-bottom: 16px;
-            opacity: 0.9;
         }
 
         .hero h1 {
@@ -120,14 +106,12 @@
             font-weight: 500;
         }
 
-        /* Container */
         .container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 40px;
         }
 
-        /* Section */
         .section {
             margin-top: 48px;
         }
@@ -155,7 +139,6 @@
             letter-spacing: -0.01em;
         }
 
-        /* Setup grid */
         .setup-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -186,7 +169,6 @@
             color: var(--text);
         }
 
-        /* Stat cards */
         .stat-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -199,29 +181,11 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 20px 22px;
-            position: relative;
-            overflow: hidden;
             transition: border-color 0.2s;
         }
 
         .stat-card:hover {
             border-color: var(--accent);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .stat-card:hover::before {
-            opacity: 1;
         }
 
         .stat-label {
@@ -257,11 +221,6 @@
             color: var(--green) !important;
         }
 
-        .stat-warn {
-            color: var(--yellow) !important;
-        }
-
-        /* Table */
         .table-wrap {
             background: var(--bg2);
             border: 1px solid var(--border);
@@ -351,7 +310,11 @@
             color: var(--text2);
         }
 
-        /* Domain shift cards */
+        .badge-wip {
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--yellow);
+        }
+
         .shift-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -364,11 +327,6 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             overflow: hidden;
-            transition: border-color 0.2s;
-        }
-
-        .shift-card:hover {
-            border-color: var(--border);
         }
 
         .shift-header {
@@ -422,7 +380,6 @@
             font-weight: 500;
         }
 
-        /* Drop bar */
         .drop-bar-wrap {
             margin: 16px 0;
         }
@@ -434,7 +391,6 @@
             font-size: 10px;
             color: var(--text2);
             margin-bottom: 6px;
-            letter-spacing: 0.08em;
         }
 
         .drop-bar-track {
@@ -448,11 +404,17 @@
         .drop-bar-fill {
             height: 100%;
             border-radius: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--red));
             transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Observations */
+        .fill-supervised {
+            background: linear-gradient(90deg, var(--accent), var(--red));
+        }
+
+        .fill-dino {
+            background: linear-gradient(90deg, var(--accent2), var(--red));
+        }
+
         .obs-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -492,73 +454,41 @@
             line-height: 1.6;
         }
 
-        /* Training curve */
-        .curve-wrap {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .curve-title {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 0.12em;
-            color: var(--text2);
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-
-        .curve-chart {
+        .method-tabs {
             display: flex;
-            align-items: flex-end;
             gap: 8px;
-            height: 80px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .curve-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            height: 100%;
-            justify-content: flex-end;
-        }
-
-        .curve-bar {
-            width: 100%;
-            background: linear-gradient(180deg, var(--accent) 0%, var(--accent2) 100%);
-            border-radius: 3px 3px 0 0;
-            opacity: 0.7;
-            min-height: 4px;
-            transition: opacity 0.2s;
-        }
-
-        .curve-bar:hover {
-            opacity: 1;
-        }
-
-        .curve-epoch {
+        .method-tab {
+            padding: 8px 16px;
+            border-radius: 6px;
             font-family: 'DM Mono', monospace;
-            font-size: 9px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg2);
             color: var(--text2);
+            transition: all 0.2s;
+            text-transform: uppercase;
         }
 
-        /* Comparison planned */
-        .planned-table .badge {
-            font-size: 10px;
+        .method-tab.active {
+            background: rgba(108, 143, 255, 0.12);
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
-        /* Divider */
-        .divider {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 48px 0 0;
+        .method-content {
+            display: none;
         }
 
-        /* Footer */
+        .method-content.active {
+            display: block;
+        }
+
         .footer {
             margin-top: 48px;
             padding-top: 24px;
@@ -566,7 +496,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: gap;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .footer-left {
@@ -581,79 +512,29 @@
             color: var(--text2);
         }
 
-        /* Tab system */
-        .tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .tab {
-            padding: 10px 18px;
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 0.08em;
-            color: var(--text2);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-            transition: color 0.2s, border-color 0.2s;
-            text-transform: uppercase;
-        }
-
-        .tab:hover {
-            color: var(--text);
-        }
-
-        .tab.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-
-        .tab-content {
-            display: none;
-            padding-top: 20px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .tabbed-wrap {
-            background: var(--bg2);
-            border: 1px solid var(--border);
+        .comparison-note {
+            background: rgba(167, 139, 250, 0.06);
+            border: 1px solid rgba(167, 139, 250, 0.2);
             border-radius: 10px;
-            overflow: hidden;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.6;
         }
 
-        .tabbed-inner {
-            padding: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .hero {
-                padding: 40px 20px;
-            }
-
-            .container {
-                padding: 0 20px;
-            }
-
-            .hero-meta {
-                gap: 16px;
-            }
+        .comparison-note strong {
+            color: var(--accent2);
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Hero -->
     <div class="hero">
         <div class="container">
             <div class="hero-label">BSc Thesis · University of Debrecen · 2026</div>
-            <h1>JEPA-RobustViT<br><em>Baseline Experiment Results</em></h1>
+            <h1>JEPA-RobustViT<br><em>Baseline Results Dashboard</em></h1>
             <div class="hero-meta">
                 <div class="meta-item">
                     <div class="meta-label">Author</div>
@@ -665,15 +546,23 @@
                 </div>
                 <div class="meta-item">
                     <div class="meta-label">External</div>
-                    <div class="meta-value">Sergio Correa · BMW</div>
+                    <div class="meta-value">Sergio Correa</div>
                 </div>
                 <div class="meta-item">
                     <div class="meta-label">Updated</div>
                     <div class="meta-value">April 2026</div>
                 </div>
                 <div class="meta-item">
-                    <div class="meta-label">Status</div>
-                    <div class="meta-value"><span class="badge badge-done">Phase 1 Complete</span></div>
+                    <div class="meta-label">Phase 1</div>
+                    <div class="meta-value"><span class="badge badge-done">✓ Supervised ViT</span></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Phase 2</div>
+                    <div class="meta-value"><span class="badge badge-done">✓ DINO</span></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Phase 3</div>
+                    <div class="meta-value"><span class="badge badge-wip">⏳ MAE + I-JEPA</span></div>
                 </div>
             </div>
         </div>
@@ -693,8 +582,20 @@
                     <div class="setup-val">ViT-B/16</div>
                 </div>
                 <div class="setup-item">
-                    <div class="setup-key">Pretraining</div>
-                    <div class="setup-val">ImageNet (supervised)</div>
+                    <div class="setup-key">Embed Dim</div>
+                    <div class="setup-val">768</div>
+                </div>
+                <div class="setup-item">
+                    <div class="setup-key">Patches</div>
+                    <div class="setup-val">196 (14×14)</div>
+                </div>
+                <div class="setup-item">
+                    <div class="setup-key">Blocks</div>
+                    <div class="setup-val">12 transformer</div>
+                </div>
+                <div class="setup-item">
+                    <div class="setup-key">Attention Heads</div>
+                    <div class="setup-val">12</div>
                 </div>
                 <div class="setup-item">
                     <div class="setup-key">Backbone Status</div>
@@ -702,7 +603,7 @@
                 </div>
                 <div class="setup-item">
                     <div class="setup-key">Head</div>
-                    <div class="setup-val">nn.Linear(768, C)</div>
+                    <div class="setup-val">Linear(768, C)</div>
                 </div>
                 <div class="setup-item">
                     <div class="setup-key">Optimizer</div>
@@ -714,7 +615,7 @@
                 </div>
                 <div class="setup-item">
                     <div class="setup-key">Epochs</div>
-                    <div class="setup-val">7</div>
+                    <div class="setup-val">10</div>
                 </div>
                 <div class="setup-item">
                     <div class="setup-key">Batch Size</div>
@@ -724,94 +625,202 @@
                     <div class="setup-key">Seeds</div>
                     <div class="setup-val">0, 1, 2</div>
                 </div>
-                <div class="setup-item">
-                    <div class="setup-key">Image Size</div>
-                    <div class="setup-val">224 × 224</div>
-                </div>
-                <div class="setup-item">
-                    <div class="setup-key">Normalization</div>
-                    <div class="setup-val">ImageNet μ/σ</div>
-                </div>
-                <div class="setup-item">
-                    <div class="setup-key">Hardware</div>
-                    <div class="setup-val">NVIDIA Tesla T4</div>
-                </div>
             </div>
         </div>
 
-        <!-- Section 2: Linear Probe -->
+        <!-- Section 2: Method Results -->
         <div class="section">
             <div class="section-header">
                 <span class="section-num">02</span>
-                <span class="section-title">PathMNIST Linear Probe — Source Domain</span>
+                <span class="section-title">Linear Probe Results by Method</span>
             </div>
 
-            <div class="stat-cards">
-                <div class="stat-card">
-                    <div class="stat-label">Mean Test Accuracy</div>
-                    <div class="stat-value stat-good">80.90<span>%</span></div>
-                    <div class="stat-sub">± 0.17% across 3 seeds</div>
+            <div class="method-tabs">
+                <div class="method-tab active" onclick="showMethod('supervised')">Supervised ViT</div>
+                <div class="method-tab" onclick="showMethod('dino')">DINO</div>
+                <div class="method-tab" onclick="showMethod('mae')">MAE</div>
+                <div class="method-tab" onclick="showMethod('jepa')">I-JEPA (ours)</div>
+            </div>
+
+            <!-- Supervised -->
+            <div id="method-supervised" class="method-content active">
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-label">Mean Test Accuracy</div>
+                        <div class="stat-value stat-good">80.90<span>%</span></div>
+                        <div class="stat-sub">± 0.17% across 3 seeds</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Mean Test ECE</div>
+                        <div class="stat-value stat-good">0.0138</div>
+                        <div class="stat-sub">Well calibrated on source</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pretraining</div>
+                        <div class="stat-value" style="font-size:18px">ImageNet</div>
+                        <div class="stat-sub">Supervised labels</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Trainable Params</div>
+                        <div class="stat-value">6,921</div>
+                        <div class="stat-sub">Head only</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Mean Test ECE</div>
-                    <div class="stat-value stat-good">0.0138</div>
-                    <div class="stat-sub">Well calibrated on source</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Best Val Accuracy</div>
-                    <div class="stat-value">84.66<span>%</span></div>
-                    <div class="stat-sub">Seed 0, epoch 7</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Trainable Params</div>
-                    <div class="stat-value">6,921</div>
-                    <div class="stat-sub">Head only — 768×9 + bias</div>
+                <div class="table-wrap">
+                    <div class="table-title">Per-Seed Results — Supervised ViT-B/16</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seed</th>
+                                <th>Best Val Acc</th>
+                                <th>Test Accuracy</th>
+                                <th>Test ECE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0</td>
+                                <td>84.66%</td>
+                                <td><span class="badge badge-blue">81.14%</span></td>
+                                <td>0.0128</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>84.51%</td>
+                                <td><span class="badge badge-blue">80.78%</span></td>
+                                <td>0.0110</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>84.30%</td>
+                                <td><span class="badge badge-blue">80.77%</span></td>
+                                <td>0.0175</td>
+                            </tr>
+                            <tr class="mean-row">
+                                <td>Mean ± Std</td>
+                                <td>84.49 ± 0.15%</td>
+                                <td>80.90 ± 0.17%</td>
+                                <td>0.0138 ± 0.0033</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="table-wrap">
-                <div class="table-title">Per-Seed Results</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Seed</th>
-                            <th>Best Val Acc</th>
-                            <th>Test Accuracy</th>
-                            <th>Test ECE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>0</td>
-                            <td>84.66%</td>
-                            <td><span class="badge badge-blue">81.14%</span></td>
-                            <td>0.0128</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>84.51%</td>
-                            <td><span class="badge badge-blue">80.78%</span></td>
-                            <td>0.0110</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>84.30%</td>
-                            <td><span class="badge badge-blue">80.77%</span></td>
-                            <td>0.0175</td>
-                        </tr>
-                        <tr class="mean-row">
-                            <td>Mean ± Std</td>
-                            <td>84.49 ± 0.15%</td>
-                            <td>80.90 ± 0.17%</td>
-                            <td>0.0138 ± 0.0033</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- DINO -->
+            <div id="method-dino" class="method-content">
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-label">Mean Test Accuracy</div>
+                        <div class="stat-value stat-good">91.80<span>%</span></div>
+                        <div class="stat-sub">± 0.33% across 3 seeds</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Mean Test ECE</div>
+                        <div class="stat-value stat-good">0.0111</div>
+                        <div class="stat-sub">Well calibrated on source</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">vs Supervised</div>
+                        <div class="stat-value" style="color:var(--green)">+10.90<span>%</span></div>
+                        <div class="stat-sub">Higher source accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pretraining</div>
+                        <div class="stat-value" style="font-size:18px">DINO SSL</div>
+                        <div class="stat-sub">No labels, contrastive</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <div class="table-title">Per-Seed Results — DINO ViT-B/16</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seed</th>
+                                <th>Best Val Acc</th>
+                                <th>Test Accuracy</th>
+                                <th>Test ECE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0</td>
+                                <td>95.08%</td>
+                                <td><span class="badge badge-blue">91.31%</span></td>
+                                <td>0.0151</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>94.75%</td>
+                                <td><span class="badge badge-blue">92.01%</span></td>
+                                <td>0.0099</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>95.16%</td>
+                                <td><span class="badge badge-blue">92.08%</span></td>
+                                <td>0.0084</td>
+                            </tr>
+                            <tr class="mean-row">
+                                <td>Mean ± Std</td>
+                                <td>95.00 ± 0.17%</td>
+                                <td>91.80 ± 0.33%</td>
+                                <td>0.0111 ± 0.0028</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="curve-wrap">
-                <div class="curve-title">Training Loss Convergence (Seed 0)</div>
-                <div class="curve-chart" id="lossChart"></div>
+            <!-- MAE -->
+            <div id="method-mae" class="method-content">
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-label">Status</div>
+                        <div class="stat-value" style="font-size:18px;color:var(--yellow)">Running</div>
+                        <div class="stat-sub">HPC experiments pending</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pretraining</div>
+                        <div class="stat-value" style="font-size:18px">MAE SSL</div>
+                        <div class="stat-sub">Pixel reconstruction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Expected Source Acc</div>
+                        <div class="stat-value" style="color:var(--text2)">~75-80<span>%</span></div>
+                        <div class="stat-sub">Lower due to reconstruction</div>
+                    </div>
+                </div>
+                <div class="comparison-note">
+                    MAE features are less linearly separable than DINO because the MAE encoder sees only 25% of patches
+                    during pretraining. Results pending HPC access.
+                </div>
+            </div>
+
+            <!-- I-JEPA -->
+            <div id="method-jepa" class="method-content">
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-label">Status</div>
+                        <div class="stat-value" style="font-size:18px;color:var(--yellow)">Planned</div>
+                        <div class="stat-sub">Requires HPC pretraining</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pretraining</div>
+                        <div class="stat-value" style="font-size:18px">I-JEPA SSL</div>
+                        <div class="stat-sub">Representation prediction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Hypothesis</div>
+                        <div class="stat-value" style="font-size:14px;color:var(--accent2)">Best under shift</div>
+                        <div class="stat-sub">More general features</div>
+                    </div>
+                </div>
+                <div class="comparison-note">
+                    <strong>Our main contribution.</strong> I-JEPA predicts abstract representations of masked regions
+                    rather than reconstructing pixels. We hypothesize this produces more transferable features under
+                    domain shift than supervised, DINO, or MAE pretraining.
+                </div>
             </div>
         </div>
 
@@ -822,169 +831,154 @@
                 <span class="section-title">Domain Shift Evaluation</span>
             </div>
 
-            <div class="shift-grid">
+            <div class="comparison-note">
+                <strong>Key finding:</strong> DINO achieves 10.90% higher source accuracy than supervised ViT but shows
+                almost identical degradation under domain shift. Better in-domain features do not protect against
+                distribution shift.
+            </div>
 
+            <!-- Comparison table -->
+            <div class="table-wrap">
+                <div class="table-title">Method Comparison — All Domains (Mean across 3 seeds)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Source</th>
+                            <th>→Derma</th>
+                            <th>→Blood</th>
+                            <th>→Retina</th>
+                            <th>Source ECE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Supervised ViT</td>
+                            <td><span class="badge badge-blue">80.90 ± 0.17%</span></td>
+                            <td><span class="badge badge-red">5.31 ± 0.15%</span></td>
+                            <td><span class="badge badge-red">17.78 ± 0.24%</span></td>
+                            <td><span class="badge badge-red">10.58 ± 0.29%</span></td>
+                            <td>0.0138</td>
+                        </tr>
+                        <tr>
+                            <td>DINO ViT-B/16</td>
+                            <td><span class="badge badge-green">91.80 ± 0.33%</span></td>
+                            <td><span class="badge badge-red">6.46 ± 0.37%</span></td>
+                            <td><span class="badge badge-red">18.45 ± 0.16%</span></td>
+                            <td><span class="badge badge-red">11.50 ± 0.00%</span></td>
+                            <td>0.0111</td>
+                        </tr>
+                        <tr>
+                            <td>MAE ViT-B/16</td>
+                            <td colspan="4" style="color:var(--text2);font-style:italic">Pending HPC experiments</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>I-JEPA + TTA (ours)</strong></td>
+                            <td colspan="4" style="color:var(--accent2);font-style:italic">Pending HPC pretraining</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- DermaMNIST shift cards -->
+            <div class="shift-grid">
                 <div class="shift-card">
                     <div class="shift-header">
                         <div>
-                            <div class="shift-name">PathMNIST → DermaMNIST</div>
+                            <div class="shift-name">→ DermaMNIST</div>
                             <div class="shift-type">Colon tissue → Skin lesion · 7 classes</div>
                         </div>
                         <span class="badge badge-red">Severe</span>
                     </div>
                     <div class="shift-body">
                         <div class="drop-bar-wrap">
-                            <div class="drop-bar-label">
-                                <span>Source: 80.90%</span>
-                                <span>Target: 5.31%</span>
-                            </div>
+                            <div class="drop-bar-label"><span>Supervised: 80.90%</span><span>5.31% retained</span></div>
                             <div class="drop-bar-track">
-                                <div class="drop-bar-fill" style="width:93.4%"></div>
+                                <div class="drop-bar-fill fill-supervised" style="width:93.4%"></div>
                             </div>
                         </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Accuracy</span>
-                            <span class="shift-val" style="color:var(--red)">5.31 ± 0.15%</span>
+                        <div class="drop-bar-wrap">
+                            <div class="drop-bar-label"><span>DINO: 91.80%</span><span>6.46% retained</span></div>
+                            <div class="drop-bar-track">
+                                <div class="drop-bar-fill fill-dino" style="width:93.0%"></div>
+                            </div>
                         </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Absolute Drop</span>
-                            <span class="shift-val" style="color:var(--red)">−75.59%</span>
-                        </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Relative Retained</span>
-                            <span class="shift-val" style="color:var(--red)">6.6%</span>
-                        </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">ECE (source → target)</span>
-                            <span class="shift-val">0.0138 → 0.8891</span>
-                        </div>
+                        <div class="shift-row"><span class="shift-metric">Supervised retained</span><span
+                                class="shift-val" style="color:var(--red)">6.6%</span></div>
+                        <div class="shift-row"><span class="shift-metric">DINO retained</span><span class="shift-val"
+                                style="color:var(--red)">7.0%</span></div>
+                        <div class="shift-row"><span class="shift-metric">Difference</span><span class="shift-val"
+                                style="color:var(--text2)">+0.4% only</span></div>
                     </div>
                 </div>
 
                 <div class="shift-card">
                     <div class="shift-header">
                         <div>
-                            <div class="shift-name">PathMNIST → BloodMNIST</div>
+                            <div class="shift-name">→ BloodMNIST</div>
                             <div class="shift-type">Colon tissue → Blood cell · 8 classes</div>
                         </div>
                         <span class="badge badge-red">Severe</span>
                     </div>
                     <div class="shift-body">
                         <div class="drop-bar-wrap">
-                            <div class="drop-bar-label">
-                                <span>Source: 80.90%</span>
-                                <span>Target: 17.78%</span>
+                            <div class="drop-bar-label"><span>Supervised: 80.90%</span><span>17.78% retained</span>
                             </div>
                             <div class="drop-bar-track">
-                                <div class="drop-bar-fill" style="width:78%"></div>
+                                <div class="drop-bar-fill fill-supervised" style="width:78%"></div>
                             </div>
                         </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Accuracy</span>
-                            <span class="shift-val" style="color:var(--red)">17.78 ± 0.24%</span>
+                        <div class="drop-bar-wrap">
+                            <div class="drop-bar-label"><span>DINO: 91.80%</span><span>18.45% retained</span></div>
+                            <div class="drop-bar-track">
+                                <div class="drop-bar-fill fill-dino" style="width:79%"></div>
+                            </div>
                         </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Absolute Drop</span>
-                            <span class="shift-val" style="color:var(--red)">−63.12%</span>
-                        </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Relative Retained</span>
-                            <span class="shift-val" style="color:var(--yellow)">21.9%</span>
-                        </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">ECE (source → target)</span>
-                            <span class="shift-val">0.0138 → 0.7489</span>
-                        </div>
+                        <div class="shift-row"><span class="shift-metric">Supervised retained</span><span
+                                class="shift-val" style="color:var(--red)">21.9%</span></div>
+                        <div class="shift-row"><span class="shift-metric">DINO retained</span><span class="shift-val"
+                                style="color:var(--red)">20.1%</span></div>
+                        <div class="shift-row"><span class="shift-metric">Difference</span><span class="shift-val"
+                                style="color:var(--text2)">-1.8% (DINO worse)</span></div>
                     </div>
                 </div>
 
                 <div class="shift-card">
                     <div class="shift-header">
                         <div>
-                            <div class="shift-name">PathMNIST → RetinaMNIST</div>
+                            <div class="shift-name">→ RetinaMNIST</div>
                             <div class="shift-type">Colon tissue → Retinal fundus · 5 classes</div>
                         </div>
                         <span class="badge badge-red">Severe</span>
                     </div>
                     <div class="shift-body">
                         <div class="drop-bar-wrap">
-                            <div class="drop-bar-label">
-                                <span>Source: 80.90%</span>
-                                <span>Target: 10.58%</span>
+                            <div class="drop-bar-label"><span>Supervised: 80.90%</span><span>10.58% retained</span>
                             </div>
                             <div class="drop-bar-track">
-                                <div class="drop-bar-fill" style="width:86.9%"></div>
+                                <div class="drop-bar-fill fill-supervised" style="width:86.9%"></div>
                             </div>
                         </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Accuracy</span>
-                            <span class="shift-val" style="color:var(--red)">10.58 ± 0.29%</span>
+                        <div class="drop-bar-wrap">
+                            <div class="drop-bar-label"><span>DINO: 91.80%</span><span>11.50% retained</span></div>
+                            <div class="drop-bar-track">
+                                <div class="drop-bar-fill fill-dino" style="width:87.5%"></div>
+                            </div>
                         </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Absolute Drop</span>
-                            <span class="shift-val" style="color:var(--red)">−70.31%</span>
-                        </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">Relative Retained</span>
-                            <span class="shift-val" style="color:var(--red)">13.1%</span>
-                        </div>
-                        <div class="shift-row">
-                            <span class="shift-metric">ECE (source → target)</span>
-                            <span class="shift-val">0.0138 → 0.7301</span>
-                        </div>
+                        <div class="shift-row"><span class="shift-metric">Supervised retained</span><span
+                                class="shift-val" style="color:var(--red)">13.1%</span></div>
+                        <div class="shift-row"><span class="shift-metric">DINO retained</span><span class="shift-val"
+                                style="color:var(--red)">12.5%</span></div>
+                        <div class="shift-row"><span class="shift-metric">Difference</span><span class="shift-val"
+                                style="color:var(--text2)">-0.6% (DINO worse)</span></div>
                     </div>
                 </div>
-
-            </div>
-
-            <!-- Summary table -->
-            <div class="table-wrap">
-                <div class="table-title">Summary — Supervised ViT Baseline (Mean across 3 seeds)</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Condition</th>
-                            <th>Accuracy</th>
-                            <th>ECE</th>
-                            <th>Abs Drop</th>
-                            <th>Retained</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>PathMNIST (source)</td>
-                            <td><span class="badge badge-green">80.90 ± 0.17%</span></td>
-                            <td>0.0138</td>
-                            <td>—</td>
-                            <td>100%</td>
-                        </tr>
-                        <tr>
-                            <td>→ DermaMNIST</td>
-                            <td><span class="badge badge-red">5.31 ± 0.15%</span></td>
-                            <td>0.8891</td>
-                            <td>−75.59%</td>
-                            <td>6.6%</td>
-                        </tr>
-                        <tr>
-                            <td>→ BloodMNIST</td>
-                            <td><span class="badge badge-red">17.78 ± 0.24%</span></td>
-                            <td>0.7489</td>
-                            <td>−63.12%</td>
-                            <td>21.9%</td>
-                        </tr>
-                        <tr>
-                            <td>→ RetinaMNIST</td>
-                            <td><span class="badge badge-red">10.58 ± 0.29%</span></td>
-                            <td>0.7301</td>
-                            <td>−70.31%</td>
-                            <td>13.1%</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
-        <!-- Section 4: Observations -->
+        <!-- Section 4: Key Observations -->
         <div class="section">
             <div class="section-header">
                 <span class="section-num">04</span>
@@ -992,24 +986,24 @@
             </div>
             <div class="obs-grid">
                 <div class="obs-card warn">
-                    <div class="obs-title">Catastrophic Accuracy Degradation</div>
-                    <div class="obs-body">The supervised ViT retains only 6.6% of source performance on DermaMNIST.
-                        ImageNet-pretrained features fail completely under significant medical domain shift.</div>
+                    <div class="obs-title">Better features ≠ better robustness</div>
+                    <div class="obs-body">DINO is 10.90% more accurate on source but retains almost identical
+                        performance under shift. Contrastive SSL does not protect against domain shift.</div>
                 </div>
                 <div class="obs-card warn">
-                    <div class="obs-title">ECE Collapses Under Shift</div>
-                    <div class="obs-body">Source ECE of 0.0138 increases to 0.8891 on DermaMNIST — a 64× increase. The
-                        model becomes severely overconfident in wrong predictions.</div>
+                    <div class="obs-title">ECE collapses under shift</div>
+                    <div class="obs-body">Source ECE of 0.011-0.014 rises to 0.84-0.89 on DermaMNIST. Both methods
+                        become severely overconfident in wrong predictions.</div>
                 </div>
                 <div class="obs-card note">
-                    <div class="obs-title">Shift Severity Varies by Distance</div>
-                    <div class="obs-body">DermaMNIST shows the largest shift, followed by RetinaMNIST and BloodMNIST.
-                        This provides a natural difficulty axis for evaluating robustness methods.</div>
+                    <div class="obs-title">DINO slightly worse on BloodMNIST</div>
+                    <div class="obs-body">Retained 20.1% vs supervised 21.9%. Stronger in-domain specialization may
+                        actually hurt transfer to some target domains.</div>
                 </div>
                 <div class="obs-card good">
-                    <div class="obs-title">Stable Across Seeds</div>
-                    <div class="obs-body">Std of 0.17% on source accuracy and ≤0.29% on all targets confirms highly
-                        reproducible results. 3-seed protocol is sufficient.</div>
+                    <div class="obs-title">Motivates I-JEPA hypothesis</div>
+                    <div class="obs-body">Neither supervised nor contrastive SSL protects against shift. Predictive SSL
+                        (I-JEPA) learns more general structure — our hypothesis for better transfer.</div>
                 </div>
             </div>
         </div>
@@ -1020,13 +1014,12 @@
                 <span class="section-num">05</span>
                 <span class="section-title">Planned Comparisons</span>
             </div>
-            <div class="table-wrap planned-table">
+            <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
                             <th>Method</th>
                             <th>Type</th>
-                            <th>Source</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -1034,57 +1027,48 @@
                         <tr>
                             <td>Supervised ViT-B/16</td>
                             <td>Supervised pretraining</td>
-                            <td>ImageNet labels</td>
                             <td><span class="badge badge-done">✓ Complete</span></td>
                         </tr>
                         <tr>
                             <td>DINO ViT-B/16</td>
-                            <td>Self-supervised (contrastive)</td>
-                            <td>Official weights</td>
-                            <td><span class="badge badge-plan">⬜ Planned</span></td>
+                            <td>Contrastive SSL</td>
+                            <td><span class="badge badge-done">✓ Complete</span></td>
                         </tr>
                         <tr>
                             <td>MAE ViT-B/16</td>
-                            <td>Self-supervised (reconstruction)</td>
-                            <td>Official weights</td>
-                            <td><span class="badge badge-plan">⬜ Planned</span></td>
+                            <td>Reconstructive SSL</td>
+                            <td><span class="badge badge-wip">⏳ Running</span></td>
                         </tr>
                         <tr>
-                            <td>I-JEPA ViT-B/16</td>
-                            <td>Self-supervised (predictive)</td>
-                            <td>Custom pretrained</td>
-                            <td><span class="badge badge-plan">⬜ Planned</span></td>
+                            <td>I-JEPA ViT-B/16 (ours)</td>
+                            <td>Predictive SSL</td>
+                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
                         </tr>
                         <tr>
-                            <td>Supervised ViT + TTA</td>
+                            <td>Supervised + TTA</td>
                             <td>Supervised + adaptation</td>
-                            <td>Entropy minimization</td>
-                            <td><span class="badge badge-plan">⬜ Planned</span></td>
+                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
                         </tr>
                         <tr>
                             <td>DINO + TTA</td>
                             <td>SSL + adaptation</td>
-                            <td>Entropy minimization</td>
-                            <td><span class="badge badge-plan">⬜ Planned</span></td>
+                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
                         </tr>
                         <tr>
                             <td>MAE + TTA</td>
                             <td>SSL + adaptation</td>
-                            <td>Entropy minimization</td>
-                            <td><span class="badge badge-plan">⬜ Planned</span></td>
+                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
                         </tr>
                         <tr>
                             <td><strong>I-JEPA + TTA (proposed)</strong></td>
                             <td><strong>SSL + adaptation</strong></td>
-                            <td><strong>Entropy minimization</strong></td>
-                            <td><span class="badge badge-plan">⬜ Planned</span></td>
+                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer">
             <div class="footer-left">JEPA-RobustViT · University of Debrecen · BSc Thesis 2026</div>
             <div class="footer-right">github.com/asfandyar-prog/JEPA-RobustViT</div>
@@ -1093,24 +1077,13 @@
     </div>
 
     <script>
-        // Render loss curve
-        const losses = [0.5758, 0.3946, 0.3591, 0.3411, 0.3283, 0.3206, 0.3185];
-        const chart = document.getElementById('lossChart');
-        const maxLoss = Math.max(...losses);
-        const minLoss = Math.min(...losses);
+        function showMethod(method) {
+            document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.method-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('method-' + method).classList.add('active');
+            event.target.classList.add('active');
+        }
 
-        losses.forEach((loss, i) => {
-            const col = document.createElement('div');
-            col.className = 'curve-col';
-            const heightPct = ((loss - minLoss) / (maxLoss - minLoss)) * 70 + 10;
-            col.innerHTML = `
-      <div class="curve-bar" style="height:${heightPct}%" title="Epoch ${i + 1}: ${loss.toFixed(4)}"></div>
-      <div class="curve-epoch">E${i + 1}</div>
-    `;
-            chart.appendChild(col);
-        });
-
-        // Animate drop bars on scroll
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(e => {
                 if (e.isIntersecting) {
@@ -1123,7 +1096,6 @@
                 }
             });
         }, { threshold: 0.3 });
-
         document.querySelectorAll('.shift-card').forEach(c => observer.observe(c));
     </script>
 </body>
