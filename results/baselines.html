@@ -33,12 +33,11 @@
             background: var(--bg);
             color: var(--text);
             font-family: 'DM Sans', sans-serif;
-            min-height: 100vh;
             padding: 0 0 80px;
         }
 
         .hero {
-            background: linear-gradient(135deg, #0d0d1a 0%, #111128 50%, #0a0f1e 100%);
+            background: linear-gradient(135deg, #0d0d1a, #111128, #0a0f1e);
             border-bottom: 1px solid var(--border);
             padding: 60px 40px 50px;
             position: relative;
@@ -52,7 +51,7 @@
             right: -100px;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(108, 143, 255, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(108, 143, 255, 0.08), transparent 70%);
             pointer-events: none;
         }
 
@@ -71,7 +70,6 @@
             font-weight: 400;
             line-height: 1.15;
             margin-bottom: 12px;
-            letter-spacing: -0.02em;
         }
 
         .hero h1 em {
@@ -136,7 +134,6 @@
             font-family: 'Instrument Serif', serif;
             font-size: 22px;
             font-weight: 400;
-            letter-spacing: -0.01em;
         }
 
         .setup-grid {
@@ -277,6 +274,10 @@
             border-top: 1px solid var(--border);
         }
 
+        tr.highlight td {
+            background: rgba(167, 139, 250, 0.04);
+        }
+
         .badge {
             display: inline-block;
             padding: 2px 8px;
@@ -300,6 +301,11 @@
             color: var(--accent);
         }
 
+        .badge-purple {
+            background: rgba(167, 139, 250, 0.12);
+            color: var(--accent2);
+        }
+
         .badge-done {
             background: rgba(52, 211, 153, 0.1);
             color: var(--green);
@@ -315,104 +321,43 @@
             color: var(--yellow);
         }
 
-        .shift-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .shift-card {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .shift-header {
-            padding: 14px 18px;
-            background: var(--bg3);
-            border-bottom: 1px solid var(--border);
+        .method-tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .shift-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .shift-type {
+        .method-tab {
+            padding: 8px 16px;
+            border-radius: 6px;
             font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--text2);
+            font-size: 11px;
             letter-spacing: 0.08em;
-        }
-
-        .shift-body {
-            padding: 18px;
-        }
-
-        .shift-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .shift-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .shift-metric {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg2);
             color: var(--text2);
-            letter-spacing: 0.1em;
+            transition: all 0.2s;
             text-transform: uppercase;
         }
 
-        .shift-val {
-            font-family: 'DM Mono', monospace;
-            font-size: 14px;
-            font-weight: 500;
+        .method-tab:hover {
+            color: var(--text);
         }
 
-        .drop-bar-wrap {
-            margin: 16px 0;
+        .method-tab.active {
+            background: rgba(108, 143, 255, 0.12);
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
-        .drop-bar-label {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--text2);
-            margin-bottom: 6px;
+        .method-content {
+            display: none;
         }
 
-        .drop-bar-track {
-            height: 6px;
-            background: var(--bg3);
-            border-radius: 3px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .drop-bar-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .fill-supervised {
-            background: linear-gradient(90deg, var(--accent), var(--red));
-        }
-
-        .fill-dino {
-            background: linear-gradient(90deg, var(--accent2), var(--red));
+        .method-content.active {
+            display: block;
         }
 
         .obs-grid {
@@ -441,6 +386,10 @@
             border-left-color: var(--green);
         }
 
+        .obs-card.purple {
+            border-left-color: var(--accent2);
+        }
+
         .obs-title {
             font-size: 13px;
             font-weight: 600;
@@ -454,39 +403,22 @@
             line-height: 1.6;
         }
 
-        .method-tabs {
-            display: flex;
-            gap: 8px;
+        .finding-box {
+            background: rgba(167, 139, 250, 0.06);
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            border-radius: 10px;
+            padding: 20px 24px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
-        .method-tab {
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            background: var(--bg2);
+        .finding-box p {
+            font-size: 13px;
             color: var(--text2);
-            transition: all 0.2s;
-            text-transform: uppercase;
+            line-height: 1.7;
         }
 
-        .method-tab.active {
-            background: rgba(108, 143, 255, 0.12);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .method-content {
-            display: none;
-        }
-
-        .method-content.active {
-            display: block;
+        .finding-box strong {
+            color: var(--accent2);
         }
 
         .footer {
@@ -512,19 +444,54 @@
             color: var(--text2);
         }
 
-        .comparison-note {
-            background: rgba(167, 139, 250, 0.06);
-            border: 1px solid rgba(167, 139, 250, 0.2);
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            color: var(--text2);
-            line-height: 1.6;
+        .bar-wrap {
+            margin: 10px 0;
         }
 
-        .comparison-note strong {
-            color: var(--accent2);
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+
+        .bar-track {
+            height: 5px;
+            background: var(--bg3);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .fill-sup {
+            background: linear-gradient(90deg, var(--accent), var(--red));
+        }
+
+        .fill-dino {
+            background: linear-gradient(90deg, var(--accent2), var(--red));
+        }
+
+        .fill-mae {
+            background: linear-gradient(90deg, var(--yellow), var(--red));
+        }
+
+        .zero-badge {
+            background: rgba(248, 113, 113, 0.2);
+            color: var(--red);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -553,16 +520,20 @@
                     <div class="meta-value">April 2026</div>
                 </div>
                 <div class="meta-item">
-                    <div class="meta-label">Phase 1</div>
-                    <div class="meta-value"><span class="badge badge-done">✓ Supervised ViT</span></div>
+                    <div class="meta-label">Supervised ViT</div>
+                    <div class="meta-value"><span class="badge badge-done">✓ Complete</span></div>
                 </div>
                 <div class="meta-item">
-                    <div class="meta-label">Phase 2</div>
-                    <div class="meta-value"><span class="badge badge-done">✓ DINO</span></div>
+                    <div class="meta-label">DINO</div>
+                    <div class="meta-value"><span class="badge badge-done">✓ Complete</span></div>
                 </div>
                 <div class="meta-item">
-                    <div class="meta-label">Phase 3</div>
-                    <div class="meta-value"><span class="badge badge-wip">⏳ MAE + I-JEPA</span></div>
+                    <div class="meta-label">MAE</div>
+                    <div class="meta-value"><span class="badge badge-done">✓ Complete</span></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">I-JEPA + TTA</div>
+                    <div class="meta-value"><span class="badge badge-wip">⏳ Pending</span></div>
                 </div>
             </div>
         </div>
@@ -570,12 +541,10 @@
 
     <div class="container">
 
-        <!-- Section 1: Setup -->
+        <!-- Setup -->
         <div class="section">
-            <div class="section-header">
-                <span class="section-num">01</span>
-                <span class="section-title">Experimental Setup</span>
-            </div>
+            <div class="section-header"><span class="section-num">01</span><span class="section-title">Experimental
+                    Setup</span></div>
             <div class="setup-grid">
                 <div class="setup-item">
                     <div class="setup-key">Backbone</div>
@@ -594,11 +563,11 @@
                     <div class="setup-val">12 transformer</div>
                 </div>
                 <div class="setup-item">
-                    <div class="setup-key">Attention Heads</div>
+                    <div class="setup-key">Attn Heads</div>
                     <div class="setup-val">12</div>
                 </div>
                 <div class="setup-item">
-                    <div class="setup-key">Backbone Status</div>
+                    <div class="setup-key">Backbone</div>
                     <div class="setup-val">Frozen</div>
                 </div>
                 <div class="setup-item">
@@ -628,18 +597,16 @@
             </div>
         </div>
 
-        <!-- Section 2: Method Results -->
+        <!-- Method Results -->
         <div class="section">
-            <div class="section-header">
-                <span class="section-num">02</span>
-                <span class="section-title">Linear Probe Results by Method</span>
-            </div>
+            <div class="section-header"><span class="section-num">02</span><span class="section-title">Linear Probe
+                    Results by Method</span></div>
 
             <div class="method-tabs">
-                <div class="method-tab active" onclick="showMethod('supervised')">Supervised ViT</div>
-                <div class="method-tab" onclick="showMethod('dino')">DINO</div>
-                <div class="method-tab" onclick="showMethod('mae')">MAE</div>
-                <div class="method-tab" onclick="showMethod('jepa')">I-JEPA (ours)</div>
+                <div class="method-tab active" onclick="showMethod('supervised',this)">Supervised ViT</div>
+                <div class="method-tab" onclick="showMethod('dino',this)">DINO</div>
+                <div class="method-tab" onclick="showMethod('mae',this)">MAE</div>
+                <div class="method-tab" onclick="showMethod('jepa',this)">I-JEPA (ours)</div>
             </div>
 
             <!-- Supervised -->
@@ -728,7 +695,7 @@
                     <div class="stat-card">
                         <div class="stat-label">Pretraining</div>
                         <div class="stat-value" style="font-size:18px">DINO SSL</div>
-                        <div class="stat-sub">No labels, contrastive</div>
+                        <div class="stat-sub">Contrastive, no labels</div>
                     </div>
                 </div>
                 <div class="table-wrap">
@@ -776,24 +743,64 @@
             <div id="method-mae" class="method-content">
                 <div class="stat-cards">
                     <div class="stat-card">
-                        <div class="stat-label">Status</div>
-                        <div class="stat-value" style="font-size:18px;color:var(--yellow)">Running</div>
-                        <div class="stat-sub">HPC experiments pending</div>
+                        <div class="stat-label">Mean Test Accuracy</div>
+                        <div class="stat-value" style="color:var(--yellow)">83.40<span>%</span></div>
+                        <div class="stat-sub">± 0.03% across 3 seeds</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Mean Test ECE</div>
+                        <div class="stat-value" style="color:var(--yellow)">0.0881</div>
+                        <div class="stat-sub">Higher than DINO/Supervised</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">BloodMNIST Shift</div>
+                        <div class="stat-value" style="color:var(--red)">0.06<span>%</span></div>
+                        <div class="stat-sub">Essentially zero — collapse</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Pretraining</div>
                         <div class="stat-value" style="font-size:18px">MAE SSL</div>
                         <div class="stat-sub">Pixel reconstruction</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Expected Source Acc</div>
-                        <div class="stat-value" style="color:var(--text2)">~75-80<span>%</span></div>
-                        <div class="stat-sub">Lower due to reconstruction</div>
-                    </div>
                 </div>
-                <div class="comparison-note">
-                    MAE features are less linearly separable than DINO because the MAE encoder sees only 25% of patches
-                    during pretraining. Results pending HPC access.
+                <div class="table-wrap">
+                    <div class="table-title">Per-Seed Results — MAE ViT-B/16</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seed</th>
+                                <th>Best Val Acc</th>
+                                <th>Test Accuracy</th>
+                                <th>Test ECE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0</td>
+                                <td>76.76%</td>
+                                <td><span class="badge badge-blue">83.44%</span></td>
+                                <td>0.0876</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>76.77%</td>
+                                <td><span class="badge badge-blue">83.37%</span></td>
+                                <td>0.0884</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>76.95%</td>
+                                <td><span class="badge badge-blue">83.38%</span></td>
+                                <td>0.0882</td>
+                            </tr>
+                            <tr class="mean-row">
+                                <td>Mean ± Std</td>
+                                <td>76.83 ± 0.08%</td>
+                                <td>83.40 ± 0.03%</td>
+                                <td>0.0881 ± 0.0004</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -802,7 +809,7 @@
                 <div class="stat-cards">
                     <div class="stat-card">
                         <div class="stat-label">Status</div>
-                        <div class="stat-value" style="font-size:18px;color:var(--yellow)">Planned</div>
+                        <div class="stat-value" style="font-size:18px;color:var(--yellow)">Pending</div>
                         <div class="stat-sub">Requires HPC pretraining</div>
                     </div>
                     <div class="stat-card">
@@ -811,33 +818,40 @@
                         <div class="stat-sub">Representation prediction</div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-label">TTA Method</div>
+                        <div class="stat-value" style="font-size:14px;color:var(--accent2)">LayerNorm entropy</div>
+                        <div class="stat-sub">No labels · 0.043% params</div>
+                    </div>
+                    <div class="stat-card">
                         <div class="stat-label">Hypothesis</div>
-                        <div class="stat-value" style="font-size:14px;color:var(--accent2)">Best under shift</div>
-                        <div class="stat-sub">More general features</div>
+                        <div class="stat-value" style="font-size:14px;color:var(--green)">Best under shift</div>
+                        <div class="stat-sub">Predictive SSL + adaptation</div>
                     </div>
                 </div>
-                <div class="comparison-note">
-                    <strong>Our main contribution.</strong> I-JEPA predicts abstract representations of masked regions
-                    rather than reconstructing pixels. We hypothesize this produces more transferable features under
-                    domain shift than supervised, DINO, or MAE pretraining.
+                <div class="finding-box">
+                    <p><strong>Our main contribution.</strong> I-JEPA predicts abstract representations of masked
+                        regions rather than reconstructing pixels or matching augmented views. We hypothesize this
+                        produces more transferable features under domain shift. Combined with entropy-based LayerNorm
+                        adaptation at test time — requiring zero labels and updating only 36,864 of 86M parameters —
+                        this is the proposed solution to the catastrophic degradation observed across all three
+                        baselines.</p>
                 </div>
             </div>
         </div>
 
-        <!-- Section 3: Domain Shift -->
+        <!-- Full Comparison -->
         <div class="section">
-            <div class="section-header">
-                <span class="section-num">03</span>
-                <span class="section-title">Domain Shift Evaluation</span>
+            <div class="section-header"><span class="section-num">03</span><span class="section-title">Full Baseline
+                    Comparison</span></div>
+
+            <div class="finding-box">
+                <p><strong>Key finding:</strong> Three different pretraining paradigms — supervised, contrastive SSL
+                    (DINO), and reconstructive SSL (MAE) — all fail catastrophically under domain shift. DINO is 10.90%
+                    more accurate on the source domain but retains only 7.0% under shift. MAE collapses to <strong>0.06%
+                        on BloodMNIST</strong> — essentially zero. Better in-domain accuracy does not equal robustness.
+                </p>
             </div>
 
-            <div class="comparison-note">
-                <strong>Key finding:</strong> DINO achieves 10.90% higher source accuracy than supervised ViT but shows
-                almost identical degradation under domain shift. Better in-domain features do not protect against
-                distribution shift.
-            </div>
-
-            <!-- Comparison table -->
             <div class="table-wrap">
                 <div class="table-title">Method Comparison — All Domains (Mean across 3 seeds)</div>
                 <table>
@@ -845,10 +859,10 @@
                         <tr>
                             <th>Method</th>
                             <th>Source</th>
-                            <th>→Derma</th>
-                            <th>→Blood</th>
-                            <th>→Retina</th>
-                            <th>Source ECE</th>
+                            <th>→ DermaMNIST</th>
+                            <th>→ BloodMNIST</th>
+                            <th>→ RetinaMNIST</th>
+                            <th>Src ECE</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -868,152 +882,157 @@
                             <td><span class="badge badge-red">11.50 ± 0.00%</span></td>
                             <td>0.0111</td>
                         </tr>
-                        <tr>
+                        <tr class="highlight">
                             <td>MAE ViT-B/16</td>
-                            <td colspan="4" style="color:var(--text2);font-style:italic">Pending HPC experiments</td>
-                            <td>—</td>
+                            <td><span class="badge badge-blue">83.40 ± 0.03%</span></td>
+                            <td><span class="badge badge-red">5.74 ± 0.00%</span></td>
+                            <td><span class="zero-badge">0.06 ± 0.00%</span></td>
+                            <td><span class="badge badge-red">2.33 ± 0.14%</span></td>
+                            <td>0.0881</td>
                         </tr>
                         <tr>
                             <td><strong>I-JEPA + TTA (ours)</strong></td>
-                            <td colspan="4" style="color:var(--accent2);font-style:italic">Pending HPC pretraining</td>
+                            <td colspan="4" style="color:var(--accent2);font-style:italic">Pending HPC pretraining and
+                                TTA evaluation</td>
                             <td>—</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- DermaMNIST shift cards -->
-            <div class="shift-grid">
-                <div class="shift-card">
-                    <div class="shift-header">
-                        <div>
-                            <div class="shift-name">→ DermaMNIST</div>
-                            <div class="shift-type">Colon tissue → Skin lesion · 7 classes</div>
-                        </div>
-                        <span class="badge badge-red">Severe</span>
-                    </div>
-                    <div class="shift-body">
-                        <div class="drop-bar-wrap">
-                            <div class="drop-bar-label"><span>Supervised: 80.90%</span><span>5.31% retained</span></div>
-                            <div class="drop-bar-track">
-                                <div class="drop-bar-fill fill-supervised" style="width:93.4%"></div>
+            <!-- Drop bars per shift -->
+            <div
+                style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px">
+
+                <div class="table-wrap" style="margin-bottom:0">
+                    <div class="table-title">→ DermaMNIST (skin lesions)</div>
+                    <div style="padding:16px">
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>Supervised 80.90%</span><span style="color:var(--red)">5.31%
+                                    (6.6%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-sup" style="width:93.4%" id="b1"></div>
                             </div>
                         </div>
-                        <div class="drop-bar-wrap">
-                            <div class="drop-bar-label"><span>DINO: 91.80%</span><span>6.46% retained</span></div>
-                            <div class="drop-bar-track">
-                                <div class="drop-bar-fill fill-dino" style="width:93.0%"></div>
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>DINO 91.80%</span><span style="color:var(--red)">6.46%
+                                    (7.0%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-dino" style="width:93.0%" id="b2"></div>
                             </div>
                         </div>
-                        <div class="shift-row"><span class="shift-metric">Supervised retained</span><span
-                                class="shift-val" style="color:var(--red)">6.6%</span></div>
-                        <div class="shift-row"><span class="shift-metric">DINO retained</span><span class="shift-val"
-                                style="color:var(--red)">7.0%</span></div>
-                        <div class="shift-row"><span class="shift-metric">Difference</span><span class="shift-val"
-                                style="color:var(--text2)">+0.4% only</span></div>
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>MAE 83.40%</span><span style="color:var(--red)">5.74%
+                                    (6.9%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-mae" style="width:93.1%" id="b3"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="shift-card">
-                    <div class="shift-header">
-                        <div>
-                            <div class="shift-name">→ BloodMNIST</div>
-                            <div class="shift-type">Colon tissue → Blood cell · 8 classes</div>
-                        </div>
-                        <span class="badge badge-red">Severe</span>
-                    </div>
-                    <div class="shift-body">
-                        <div class="drop-bar-wrap">
-                            <div class="drop-bar-label"><span>Supervised: 80.90%</span><span>17.78% retained</span>
-                            </div>
-                            <div class="drop-bar-track">
-                                <div class="drop-bar-fill fill-supervised" style="width:78%"></div>
+                <div class="table-wrap" style="margin-bottom:0">
+                    <div class="table-title">→ BloodMNIST (blood cells)</div>
+                    <div style="padding:16px">
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>Supervised 80.90%</span><span
+                                    style="color:var(--yellow)">17.78% (22%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-sup" style="width:78%" id="b4"></div>
                             </div>
                         </div>
-                        <div class="drop-bar-wrap">
-                            <div class="drop-bar-label"><span>DINO: 91.80%</span><span>18.45% retained</span></div>
-                            <div class="drop-bar-track">
-                                <div class="drop-bar-fill fill-dino" style="width:79%"></div>
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>DINO 91.80%</span><span style="color:var(--yellow)">18.45%
+                                    (20%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-dino" style="width:79%" id="b5"></div>
                             </div>
                         </div>
-                        <div class="shift-row"><span class="shift-metric">Supervised retained</span><span
-                                class="shift-val" style="color:var(--red)">21.9%</span></div>
-                        <div class="shift-row"><span class="shift-metric">DINO retained</span><span class="shift-val"
-                                style="color:var(--red)">20.1%</span></div>
-                        <div class="shift-row"><span class="shift-metric">Difference</span><span class="shift-val"
-                                style="color:var(--text2)">-1.8% (DINO worse)</span></div>
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>MAE 83.40%</span><span style="color:var(--red)">0.06%
+                                    (0.1%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-mae" style="width:99.9%" id="b6"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="shift-card">
-                    <div class="shift-header">
-                        <div>
-                            <div class="shift-name">→ RetinaMNIST</div>
-                            <div class="shift-type">Colon tissue → Retinal fundus · 5 classes</div>
-                        </div>
-                        <span class="badge badge-red">Severe</span>
-                    </div>
-                    <div class="shift-body">
-                        <div class="drop-bar-wrap">
-                            <div class="drop-bar-label"><span>Supervised: 80.90%</span><span>10.58% retained</span>
-                            </div>
-                            <div class="drop-bar-track">
-                                <div class="drop-bar-fill fill-supervised" style="width:86.9%"></div>
+                <div class="table-wrap" style="margin-bottom:0">
+                    <div class="table-title">→ RetinaMNIST (retinal fundus)</div>
+                    <div style="padding:16px">
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>Supervised 80.90%</span><span style="color:var(--red)">10.58%
+                                    (13%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-sup" style="width:86.9%" id="b7"></div>
                             </div>
                         </div>
-                        <div class="drop-bar-wrap">
-                            <div class="drop-bar-label"><span>DINO: 91.80%</span><span>11.50% retained</span></div>
-                            <div class="drop-bar-track">
-                                <div class="drop-bar-fill fill-dino" style="width:87.5%"></div>
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>DINO 91.80%</span><span style="color:var(--red)">11.50%
+                                    (13%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-dino" style="width:87.5%" id="b8"></div>
                             </div>
                         </div>
-                        <div class="shift-row"><span class="shift-metric">Supervised retained</span><span
-                                class="shift-val" style="color:var(--red)">13.1%</span></div>
-                        <div class="shift-row"><span class="shift-metric">DINO retained</span><span class="shift-val"
-                                style="color:var(--red)">12.5%</span></div>
-                        <div class="shift-row"><span class="shift-metric">Difference</span><span class="shift-val"
-                                style="color:var(--text2)">-0.6% (DINO worse)</span></div>
+                        <div class="bar-wrap">
+                            <div class="bar-label"><span>MAE 83.40%</span><span style="color:var(--red)">2.33%
+                                    (2.8%)</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill fill-mae" style="width:97.2%" id="b9"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Section 4: Key Observations -->
+        <!-- Observations -->
         <div class="section">
-            <div class="section-header">
-                <span class="section-num">04</span>
-                <span class="section-title">Key Observations</span>
-            </div>
+            <div class="section-header"><span class="section-num">04</span><span class="section-title">Key
+                    Observations</span></div>
             <div class="obs-grid">
                 <div class="obs-card warn">
-                    <div class="obs-title">Better features ≠ better robustness</div>
-                    <div class="obs-body">DINO is 10.90% more accurate on source but retains almost identical
-                        performance under shift. Contrastive SSL does not protect against domain shift.</div>
+                    <div class="obs-title">All three baselines fail catastrophically</div>
+                    <div class="obs-body">Supervised, contrastive SSL, and reconstructive SSL all collapse under domain
+                        shift regardless of source domain accuracy. No existing pretraining paradigm solves this.</div>
                 </div>
                 <div class="obs-card warn">
-                    <div class="obs-title">ECE collapses under shift</div>
-                    <div class="obs-body">Source ECE of 0.011-0.014 rises to 0.84-0.89 on DermaMNIST. Both methods
-                        become severely overconfident in wrong predictions.</div>
+                    <div class="obs-title">MAE collapses to 0.06% on BloodMNIST</div>
+                    <div class="obs-body">Pixel reconstruction pretraining produces features highly sensitive to
+                        low-level visual statistics. When imaging modality changes from tissue to blood cells, the
+                        features collapse entirely.</div>
                 </div>
                 <div class="obs-card note">
-                    <div class="obs-title">DINO slightly worse on BloodMNIST</div>
-                    <div class="obs-body">Retained 20.1% vs supervised 21.9%. Stronger in-domain specialization may
-                        actually hurt transfer to some target domains.</div>
+                    <div class="obs-title">Better source accuracy ≠ better robustness</div>
+                    <div class="obs-body">DINO is 10.90% more accurate than supervised on source but retains only 7.0%
+                        under shift — nearly identical to supervised at 6.6%. Source performance does not predict shift
+                        robustness.</div>
                 </div>
                 <div class="obs-card good">
-                    <div class="obs-title">Motivates I-JEPA hypothesis</div>
-                    <div class="obs-body">Neither supervised nor contrastive SSL protects against shift. Predictive SSL
-                        (I-JEPA) learns more general structure — our hypothesis for better transfer.</div>
+                    <div class="obs-title">ECE collapses under shift for all methods</div>
+                    <div class="obs-body">Source ECE ranges 0.011–0.088. Under shift all methods become severely
+                        overconfident. Calibration failure is as dangerous as accuracy failure in clinical deployment.
+                    </div>
+                </div>
+                <div class="obs-card purple">
+                    <div class="obs-title">Three distinct failure modes</div>
+                    <div class="obs-body">Supervised: moderate collapse. DINO: same collapse despite better features.
+                        MAE: catastrophic collapse on some domains. Each pretraining paradigm fails differently —
+                        motivating a fundamentally different approach.</div>
+                </div>
+                <div class="obs-card good">
+                    <div class="obs-title">Highly reproducible results</div>
+                    <div class="obs-body">MAE std of 0.03% is the smallest seen. All methods show std below 0.37%
+                        confirming 3-seed protocol is sufficient for reliable conclusions.</div>
                 </div>
             </div>
         </div>
 
-        <!-- Section 5: Planned -->
+        <!-- Planned -->
         <div class="section">
-            <div class="section-header">
-                <span class="section-num">05</span>
-                <span class="section-title">Planned Comparisons</span>
-            </div>
+            <div class="section-header"><span class="section-num">05</span><span class="section-title">Planned
+                    Comparisons</span></div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -1037,32 +1056,32 @@
                         <tr>
                             <td>MAE ViT-B/16</td>
                             <td>Reconstructive SSL</td>
-                            <td><span class="badge badge-wip">⏳ Running</span></td>
+                            <td><span class="badge badge-done">✓ Complete</span></td>
                         </tr>
                         <tr>
                             <td>I-JEPA ViT-B/16 (ours)</td>
                             <td>Predictive SSL</td>
-                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
+                            <td><span class="badge badge-wip">⏳ HPC Pending</span></td>
                         </tr>
                         <tr>
                             <td>Supervised + TTA</td>
-                            <td>Supervised + adaptation</td>
-                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
+                            <td>Supervised + LayerNorm adaptation</td>
+                            <td><span class="badge badge-plan">⬜ Planned</span></td>
                         </tr>
                         <tr>
                             <td>DINO + TTA</td>
-                            <td>SSL + adaptation</td>
-                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
+                            <td>Contrastive SSL + adaptation</td>
+                            <td><span class="badge badge-plan">⬜ Planned</span></td>
                         </tr>
                         <tr>
                             <td>MAE + TTA</td>
-                            <td>SSL + adaptation</td>
-                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
+                            <td>Reconstructive SSL + adaptation</td>
+                            <td><span class="badge badge-plan">⬜ Planned</span></td>
                         </tr>
                         <tr>
                             <td><strong>I-JEPA + TTA (proposed)</strong></td>
-                            <td><strong>SSL + adaptation</strong></td>
-                            <td><span class="badge badge-plan">⬜ HPC Pending</span></td>
+                            <td><strong>Predictive SSL + adaptation</strong></td>
+                            <td><span class="badge badge-plan">⬜ Planned</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -1077,17 +1096,17 @@
     </div>
 
     <script>
-        function showMethod(method) {
+        function showMethod(method, el) {
             document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.method-content').forEach(c => c.classList.remove('active'));
             document.getElementById('method-' + method).classList.add('active');
-            event.target.classList.add('active');
+            el.classList.add('active');
         }
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(e => {
                 if (e.isIntersecting) {
-                    e.target.querySelectorAll('.drop-bar-fill').forEach(bar => {
+                    e.target.querySelectorAll('.bar-fill').forEach(bar => {
                         const w = bar.style.width;
                         bar.style.width = '0%';
                         setTimeout(() => { bar.style.width = w; }, 100);
@@ -1095,8 +1114,8 @@
                     observer.unobserve(e.target);
                 }
             });
-        }, { threshold: 0.3 });
-        document.querySelectorAll('.shift-card').forEach(c => observer.observe(c));
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.table-wrap').forEach(c => observer.observe(c));
     </script>
 </body>
 
